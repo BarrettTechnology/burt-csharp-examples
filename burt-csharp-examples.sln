@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example01-Console", "Example01-Console\Example01-Console.csproj", "{C7568C04-9952-43B0-91D8-182D0ABD89C9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example02-HoldPosition", "Example02-HoldPosition\Example02-HoldPosition.csproj", "{EFD9DDED-4CB3-41AB-8C99-0F705531B560}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example03-SimpleMove", "Example03-SimpleMove\Example03-SimpleMove.csproj", "{530BE6FE-4F43-4CF1-80AF-8B57F7F1B461}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{530BE6FE-4F43-4CF1-80AF-8B57F7F1B461}.Debug|x86.ActiveCfg = Debug|x86
+		{530BE6FE-4F43-4CF1-80AF-8B57F7F1B461}.Debug|x86.Build.0 = Debug|x86
+		{530BE6FE-4F43-4CF1-80AF-8B57F7F1B461}.Release|x86.ActiveCfg = Release|x86
+		{530BE6FE-4F43-4CF1-80AF-8B57F7F1B461}.Release|x86.Build.0 = Release|x86
+		{C7568C04-9952-43B0-91D8-182D0ABD89C9}.Debug|x86.ActiveCfg = Debug|x86
+		{C7568C04-9952-43B0-91D8-182D0ABD89C9}.Debug|x86.Build.0 = Debug|x86
+		{C7568C04-9952-43B0-91D8-182D0ABD89C9}.Release|x86.ActiveCfg = Release|x86
+		{C7568C04-9952-43B0-91D8-182D0ABD89C9}.Release|x86.Build.0 = Release|x86
+		{EFD9DDED-4CB3-41AB-8C99-0F705531B560}.Debug|x86.ActiveCfg = Debug|x86
+		{EFD9DDED-4CB3-41AB-8C99-0F705531B560}.Debug|x86.Build.0 = Debug|x86
+		{EFD9DDED-4CB3-41AB-8C99-0F705531B560}.Release|x86.ActiveCfg = Release|x86
+		{EFD9DDED-4CB3-41AB-8C99-0F705531B560}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		version = 0.2
+		StartupItem = ProficioClient.Examples.02-HoldPosition\ProficioClient.Examples.02-HoldPosition.csproj
+	EndGlobalSection
+EndGlobal
