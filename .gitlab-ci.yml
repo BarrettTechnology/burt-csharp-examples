@@ -24,12 +24,6 @@ build:
   #   paths:
   #     - "*.o"
 
-# run tests using the binary built before
-test:
-  stage: test
-  script:
-    - ./scripts/run-tests.sh
-
 release-job:
   # script:
   #   - build for release
