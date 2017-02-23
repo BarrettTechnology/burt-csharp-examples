@@ -1,0 +1,62 @@
+providers: [
+  {
+    key: "bt"
+    config:
+      commands: [
+        {
+          project: "/home/cw/workspace/unity/proficio-client-lib-csharp"
+          source: "/home/cw/workspace/unity/proficio-client-lib-csharp/.build-tools.cson"
+          name: "build"
+          command: "./scripts/build.sh"
+          wd: "."
+          env: {}
+          modifier: {}
+          environment:
+            name: "child_process"
+            config:
+              stdoe: "both"
+          stdout:
+            pipeline: []
+          stderr:
+            pipeline: []
+          output:
+            console:
+              close_success: true
+              queue_in_buffer: true
+              colors: false
+              stdin: false
+            linter:
+              no_trace: false
+              immediate: false
+          version: 2
+        }
+        {
+          project: "/home/cw/workspace/unity/proficio-client-lib-csharp"
+          source: "/home/cw/workspace/unity/proficio-client-lib-csharp/.build-tools.cson"
+          name: "run-tests"
+          command: "./scripts/run-tests.sh"
+          wd: "."
+          env: {}
+          modifier: {}
+          environment:
+            name: "child_process"
+            config:
+              stdoe: "both"
+          stdout:
+            pipeline: []
+          stderr:
+            pipeline: []
+          output:
+            console:
+              close_success: true
+              queue_in_buffer: true
+              colors: false
+              stdin: false
+            linter:
+              no_trace: false
+              immediate: false
+          version: 2
+        }
+      ]
+  }
+]

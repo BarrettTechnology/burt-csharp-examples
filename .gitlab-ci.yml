@@ -1,0 +1,41 @@
+image: ubuntu:14.04
+stages:
+  - build
+  - test
+  - release-job
+
+cache:
+  paths:
+  - apt-cache/
+
+before_script:
+  - export APT_CACHE_DIR=`pwd`/apt-cache && mkdir -pv $APT_CACHE_DIR
+  - debconf-set-selections <<< 'mysql-server mysql-server/root_password password root'
+  - debconf-set-selections <<< 'mysql-server mysql-server/root_password_again password root'
+  - apt update && apt-get install -o dir::cache::archives="$APT_CACHE_DIR" -y mysql-server mono-complete monodevelop monodevelop-nunit git nunit nunit-console
+
+build:
+  stage: build
+  # instead of calling g++ directly you can also use some build toolkit like make
+  # install the necessary build tools when needed
+  script:
+    - ./scripts/build.sh
+  # cache:
+  #   paths:
+  #     - "*.o"
+
+# run tests using the binary built before
+test:
+  stage: test
+  script:
+    - ./scripts/run-tests.sh
+
+release-job:
+  # script:
+  #   - build for release
+  artifacts:
+    paths:
+      - .
+  only:
+    - devel
+    - tags
