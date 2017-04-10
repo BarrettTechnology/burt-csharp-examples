@@ -45,7 +45,10 @@ public class HoldPositionExample
 
 	public HoldPositionExample ()
 	{
-		// Initialize vectors
+		// Initialize vectors. This is required to set the length of the vectors before they
+		// are used. Build.Dense initializes all the elements to 0. Build.DenseOfArray sets
+		// the vector length to the length of the array and the values equal to the values
+		// in the array.
 		jointPos = Vector<float>.Build.Dense (kDof);
 		jointHoldPos = Vector<float>.Build.Dense (kDof);
 		jointTorques = Vector<float>.Build.Dense (kDof);
@@ -56,7 +59,7 @@ public class HoldPositionExample
 		kiJoint = Vector<float>.Build.DenseOfArray (kiJointDefault);
 		kdJoint = Vector<float>.Build.DenseOfArray(kdJointDefault);
 
-		// Set up communication with the robot and initialize force/torque to zero
+		// Set up communication with the robot.
 		robot = new RobotClient ();
 		robot.SubscribeToServerUpdate (OnReceiveServerUpdate);
 
@@ -66,6 +69,9 @@ public class HoldPositionExample
 			Barrett.Logger.Debug(Barrett.Logger.INFO, "IsPatientConnected?: {0}", status.patient);
 		});
 
+		// Initialize force/torque inputs to zero. Here, both are initialized separately. Alternately,
+		// both can be set in a single command with
+		//    robot.SendCartesianForcesAndJointTorques (Vector3.zero, Vector3.zero);
 		robot.SendCartesianForces (Vector3.zero);
 		robot.SendJointTorques (Vector3.zero);
 
@@ -90,7 +96,7 @@ public class HoldPositionExample
 		_dtTimer.Start ();
 
 		// Loop: calculate forces/torques at every timestep based on current
-		// state feedback from the robot
+		// state feedback from the robot.
 		bool running = true;
 		_intervalTimer.Reset ();
 

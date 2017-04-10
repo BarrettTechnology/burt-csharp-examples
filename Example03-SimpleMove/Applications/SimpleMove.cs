@@ -15,7 +15,7 @@ public class SimpleMoveExample
 
 	const int kDof = 3;                  // number of degrees of freedom
 	const int kNumDim = 3;               // number of Cartesian dimensions
-	public static readonly int _controlRate = 10; // Control Rate in ms
+	public static readonly int _controlRate = 10;  // Control Rate in ms
 	public static readonly float[] kpJointDefault = { 45, 100,  9 };
 	public static readonly float[] kiJointDefault = {  0,   0,  0 };
 	public static readonly float[] kdJointDefault = { 12,  15,  2 };
@@ -37,8 +37,14 @@ public class SimpleMoveExample
 	private bool jointActive = false;
 	private bool toolActive = false;
 
-	private Vector<float> jointCommand;  // joint position command
-	private Vector<float> toolCommand;   // tool position command
+	// Position commands should be saved in vectors to be used as inputs to
+	// the PID controllers.
+	private Vector<float> jointCommand;
+	private Vector<float> toolCommand;
+
+	// Trajectory generators create a linear trajector with a trapezoidal velocity profile.
+	// See the documentation for more details about the characteristics of this type of
+	// trajectory and how it is generated.
 	private Barrett.Control.LinearTrajectoryVector jointTraj;
 	private Barrett.Control.LinearTrajectoryVector toolTraj;
 
@@ -68,7 +74,7 @@ public class SimpleMoveExample
 		});
 
 		robot.SendCartesianForces(Vector3.zero);
-//		robot.SendJointTorques(Vector3.zero);
+		robot.SendJointTorques(Vector3.zero);
 
 		// Set up keyboard callbacks
 		keyboardManager = new Barrett.KeyboardManager ();
@@ -96,7 +102,7 @@ public class SimpleMoveExample
 		_dtTimer.Start ();
 
 		// Loop: calculate forces/torques at every timestep based on current
-		// state feedback from the robot
+		// state feedback from the robot.
 		bool running = true;
 		_intervalTimer.Reset ();
 		while (running) {
@@ -211,6 +217,13 @@ public class SimpleMoveExample
 	/// <summary>
 	/// Begins a movement to the specified joint position.
 	/// </summary>
+	// Here, the BeginMove () command is used to start the linear trajectory. By default, this
+	// command uses speed and acceleration of 0.5f. Speed is the norm of the velocity vector.
+	// Units depend on which type of trajectory being commanded, but for now the default value
+	// is always 0.5f. Make sure this speed is appropriate for your application. If you need a
+	// different speed, use the optional arguments as
+	//    jointTraj.BeginMove (jointPos, jointCommand, speed, acc);
+	// where speed and acc are scalar floats.
 	public void MoveToJoint ()
 	{
 		if (toolActive || jointActive)
@@ -231,6 +244,14 @@ public class SimpleMoveExample
 	/// <summary>
 	/// Begins a movement to the specified tool position.
 	/// </summary>
+	// Here, the BeginMove () command is used to start the linear trajectory. By default, this
+	// command uses speed and acceleration of 0.5f. Speed is the norm of the velocity vector.
+	// Units depend on which type of trajectory being commanded, but for now the default value
+	// is always 0.5f. Make sure this speed is appropriate for your application. If you need a
+	// different speed, use the optional arguments as
+	//    toolTraj.BeginMove (toolPos, toolCommand, speed, acc);
+	// where speed and acc are scalar floats. For tool movements, it is currently recommended
+	// to keep the speed between 0.2f and 0.7f.
 	public void MoveToTool ()
 	{
 		if (toolActive || jointActive)
@@ -240,8 +261,7 @@ public class SimpleMoveExample
 		else if (ParsePositions (ref toolCommand))
 		{
 			toolActive = true;
-			Console.WriteLine ("Moving to tool position (" + toolCommand [0] + ", " +
-				toolCommand [1] + ", " + toolCommand [2] + ")");
+			Console.WriteLine ("Moving to tool position (" + toolCommand.ToVector3 ().ToString ("f3") + ")");
 			toolTraj.BeginMove (toolPos, toolCommand);
 			toolForce.Clear ();
 			toolPid.ResetAll ();
