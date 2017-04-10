@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example02-HoldPosition", "E
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example03-SimpleMove", "Example03-SimpleMove\Example03-SimpleMove.csproj", "{530BE6FE-4F43-4CF1-80AF-8B57F7F1B461}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example04-CustomToolTrajectory", "Example04-CustomToolTrajectory\Example04-CustomToolTrajectory.csproj", "{A6E1BC8A-6F6E-4047-A5E9-70D55DA78255}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -17,6 +19,10 @@ Global
 		{530BE6FE-4F43-4CF1-80AF-8B57F7F1B461}.Debug|x86.Build.0 = Debug|x86
 		{530BE6FE-4F43-4CF1-80AF-8B57F7F1B461}.Release|x86.ActiveCfg = Release|x86
 		{530BE6FE-4F43-4CF1-80AF-8B57F7F1B461}.Release|x86.Build.0 = Release|x86
+		{A6E1BC8A-6F6E-4047-A5E9-70D55DA78255}.Debug|x86.ActiveCfg = Debug|x86
+		{A6E1BC8A-6F6E-4047-A5E9-70D55DA78255}.Debug|x86.Build.0 = Debug|x86
+		{A6E1BC8A-6F6E-4047-A5E9-70D55DA78255}.Release|x86.ActiveCfg = Release|x86
+		{A6E1BC8A-6F6E-4047-A5E9-70D55DA78255}.Release|x86.Build.0 = Release|x86
 		{C7568C04-9952-43B0-91D8-182D0ABD89C9}.Debug|x86.ActiveCfg = Debug|x86
 		{C7568C04-9952-43B0-91D8-182D0ABD89C9}.Debug|x86.Build.0 = Debug|x86
 		{C7568C04-9952-43B0-91D8-182D0ABD89C9}.Release|x86.ActiveCfg = Release|x86
