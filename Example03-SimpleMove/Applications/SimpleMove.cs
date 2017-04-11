@@ -211,6 +211,7 @@ public class SimpleMoveExample
 	/// </summary>
 	public void OnDisable ()
 	{
+		OnIdle ();
 		robot.SendIsEnabled (false);
 	}
 
