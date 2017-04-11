@@ -155,10 +155,8 @@ public class SimpleMoveExample
 	/// </summary>
 	public void PrintInfo ()
 	{
-		Console.WriteLine ("Joint positions: (" + jointPos [0] + ", " +
-			jointPos [1] + ", " + jointPos [2] + ")");
-		Console.WriteLine ("Tool position: (" + toolPos [0] + ", " +
-			toolPos [1] + ", " + toolPos [2] + ")");
+		Console.WriteLine ("Joint positions: {0}", jointPos.ToVector3().ToString ("f3"));
+		Console.WriteLine ("Tool position: {0}", toolPos.ToVector3().ToString ("f3"));
 	}
 
 	/// <summary>

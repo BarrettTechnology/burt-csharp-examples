@@ -145,8 +145,8 @@ public class HoldPositionExample
 	/// </summary>
 	public void PrintInfo ()
 	{
-		Console.WriteLine ("Joint positions: {0}", jointPos.ToVector3());
-		Console.WriteLine ("Tool position: {0}", toolPos.ToVector3());
+		Console.WriteLine ("Joint positions: {0}", jointPos.ToVector3().ToString ("f3"));
+		Console.WriteLine ("Tool position: {0}", toolPos.ToVector3().ToString ("f3"));
 	}
 
 	/// <summary>
