@@ -6,7 +6,7 @@ namespace Example04CustomToolTrajectory
 	{
 		public static void Main (string[] args)
 		{
-			Console.WriteLine ("Hello World!");
+			new CustomToolTrajectory ();
 		}
 	}
 }
