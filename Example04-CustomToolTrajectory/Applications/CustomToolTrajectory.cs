@@ -25,9 +25,9 @@ public class CustomToolTrajectory
 	// Characteristics of the circle. Start position is chosen to work for both
 	// right- and left-handed workspaces.
 	//TODO(ab) check the x coordinate
-	readonly float[] startPos = new float[] { 0.2f, 0.0f, 0.225f };
-	const float amplitude = 0.1f;  // meters
-	const float frequency = 1.0f;  // rad/s
+	readonly float[] startPos = new float[] { 0.6f, 0.0f, 0.225f };
+	const float amplitude = 0.15f;  // meters
+	const float frequency = 2.0f;  // rad/s
 
 	private Barrett.Control.PidVector toolPid;
 	private float kpTool = 200.0f;
