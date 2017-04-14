@@ -1,5 +1,5 @@
-# Burt C# Examples
-> Example programs for the Burt robot using a CoAP/UDP-based server :robot:
+# BURT C# Examples
+> Example programs for the BURT robot using a CoAP/UDP-based server :robot:
 
 Example programs show how to activate the robot, read command line input, and
 command simple movements.
