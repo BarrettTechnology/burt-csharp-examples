@@ -17,10 +17,10 @@ public class HoldPositionExample
 
 	public static readonly int kDof = 3;     // degrees of freedom
 	public static readonly int kNumDim = 3;  // Cartesian dims
-	public static readonly int _controlLoopTime = 10;  // in ms
-	public static readonly float[] kpJointDefault = { 45, 100,  9 };
-	public static readonly float[] kiJointDefault = {  0,   0,  0 };
-	public static readonly float[] kdJointDefault = { 12,  15,  2 };
+	public static readonly int controlLoopTime = 10;  // in ms
+	public static readonly float[] kpJointDefault = { 45, 100,  9 };  // N-m/rad
+	public static readonly float[] kiJointDefault = {  0,   0,  0 };  // N-m/rad-s
+	public static readonly float[] kdJointDefault = { 12,  15,  2 };  // N-m-s/rad
 
 	private Vector<float> jointPos;      // current joint positions
 	private Vector<float> jointHoldPos;  // joint hold position command
@@ -34,14 +34,14 @@ public class HoldPositionExample
 	private Vector<float> kpJoint;
 	private Vector<float> kiJoint;
 	private Vector<float> kdJoint;
-	private float kpTool = 200.0f;
-	private float kiTool = 0.0f;
-	private float kdTool = 10.0f;
-	private const float filterFreq = 30.0f;
+	private float kpTool = 200.0f;  // N/m
+	private float kiTool = 0.0f;    // N/m-s
+	private float kdTool = 10.0f;   // N-s/m
+	private const float lowpassFilterFreq = 30.0f;  // rad/s
 	private bool jointHolding = false;
 	private bool toolHolding = false;
-	private Stopwatch _dtTimer = new Stopwatch ();
-	private Stopwatch _intervalTimer= new Stopwatch ();
+	private Stopwatch dtTimer = new Stopwatch ();
+	private Stopwatch intervalTimer = new Stopwatch ();
 
 	public HoldPositionExample ()
 	{
@@ -57,7 +57,7 @@ public class HoldPositionExample
 		toolForce = Vector<float>.Build.Dense (kNumDim);
 		kpJoint = Vector<float>.Build.DenseOfArray (kpJointDefault);
 		kiJoint = Vector<float>.Build.DenseOfArray (kiJointDefault);
-		kdJoint = Vector<float>.Build.DenseOfArray(kdJointDefault);
+		kdJoint = Vector<float>.Build.DenseOfArray (kdJointDefault);
 
 		// Set up communication with the robot.
 		robot = new RobotClient ();
@@ -88,23 +88,23 @@ public class HoldPositionExample
 		PrintUsage ();
 
 		// Set up PID controllers
-		jointPid = new Barrett.Control.PidVector (kpJoint, kiJoint, kdJoint, kDof, filterFreq);
-		toolPid = new Barrett.Control.PidVector (kpTool, kiTool, kdTool, kNumDim, filterFreq);
+		jointPid = new Barrett.Control.PidVector (kpJoint, kiJoint, kdJoint, kDof, lowpassFilterFreq);
+		toolPid = new Barrett.Control.PidVector (kpTool, kiTool, kdTool, kNumDim, lowpassFilterFreq);
 
-		// Start the _dtTimer
-		_dtTimer.Reset ();
-		_dtTimer.Start ();
+		// Start the dtTimer
+		dtTimer.Reset ();
+		dtTimer.Start ();
 
 		// Loop: calculate forces/torques at every timestep based on current
 		// state feedback from the robot.
 		bool running = true;
-		_intervalTimer.Reset ();
+		intervalTimer.Reset ();
 
 		while (running) {
 			running = ReadKeyPress ();
 
-			float dt = (float)_dtTimer.ElapsedTicks / (float)Stopwatch.Frequency;
-			_dtTimer.Restart ();
+			float dt = (float)dtTimer.ElapsedTicks / (float)Stopwatch.Frequency;
+			dtTimer.Restart ();
 			if (jointHolding) {
 				jointTorques = jointPid.Update (jointHoldPos, jointPos, dt);
 				toolForce.Clear ();
@@ -120,8 +120,8 @@ public class HoldPositionExample
 				.Catch (e => Barrett.Logger.Debug(Barrett.Logger.CRITICAL, "Exception {0}", e))
 				.Done ();
 
-			Thread.Sleep (Math.Max (0, _controlLoopTime - (int)_intervalTimer.ElapsedMilliseconds));
-			_intervalTimer.Restart ();
+			Thread.Sleep (Math.Max (0, controlLoopTime - (int)intervalTimer.ElapsedMilliseconds));
+			intervalTimer.Restart ();
 		}
 	}
 

@@ -24,17 +24,16 @@ public class CustomToolTrajectory
 
 	// Characteristics of the circle. Start position is chosen to work for both
 	// right- and left-handed workspaces.
-	//TODO(ab) check the x coordinate
 	readonly float[] startPos = new float[] { 0.6f, 0.0f, 0.225f };
 	const float amplitude = 0.15f;  // meters
 	const float frequency = 2.0f;  // rad/s
 
 	private Barrett.Control.PidVector toolPid;
-	private float kpTool = 200.0f;
-	private float kiTool = 0.0f;
-	private float kdTool = 10.0f;
-	private const float filterFreq = 30.0f;
-	private bool active = false;
+	private float kpTool = 200.0f;  // N/m
+	private float kiTool = 0.0f;    // N/m-s
+	private float kdTool = 10.0f;   // N-s/m
+	private const float lowpassFilterFreq = 30.0f;  // rad/s
+	private bool motionActive = false;
 
 	// A linear trajectory for moving to the start point of the circle
 	private Barrett.Control.LinearTrajectoryVector startTraj;
@@ -54,7 +53,7 @@ public class CustomToolTrajectory
 		robot = new RobotClient ();
 		robot.SubscribeToServerUpdate (OnReceiveServerUpdate);
 		robot.SubscribeToRobotStatus (OnReceiveRobotStatus);
-		robot.SendCartesianForces(Vector3.zero);
+		robot.SendCartesianForces (Vector3.zero);
 
 		// Set up keyboard callbacks
 		keyboardManager = new Barrett.KeyboardManager ();
@@ -67,7 +66,7 @@ public class CustomToolTrajectory
 		PrintUsage ();
 
 		// Set up PID controller
-		toolPid = new Barrett.Control.PidVector (kpTool, kiTool, kdTool, kNumDim, filterFreq);
+		toolPid = new Barrett.Control.PidVector (kpTool, kiTool, kdTool, kNumDim, lowpassFilterFreq);
 
 		// Set up trajectory generator
 		startTraj = new Barrett.Control.LinearTrajectoryVector (kNumDim);
@@ -86,7 +85,7 @@ public class CustomToolTrajectory
 			float dt = (float) dtTimer.ElapsedTicks / (float) Stopwatch.Frequency;
 			dtTimer.Restart ();
 
-			if (active) {
+			if (motionActive) {
 				if (!startTraj.DoneMoving) {
 					// Follow the linear trajectory to the start position until it is done.
 					startTraj.Update ();
@@ -145,9 +144,9 @@ public class CustomToolTrajectory
 	/// </summary>
 	private void OnReceiveRobotStatus (Barrett.CoAP.MsgTypes.RobotStatus status)
 	{
-		Barrett.Logger.Debug(Barrett.Logger.INFO, "Handedness: {0}", status.handedness);
-		Barrett.Logger.Debug(Barrett.Logger.INFO, "Outerlink: {0}", status.outerlink);
-		Barrett.Logger.Debug(Barrett.Logger.INFO, "IsPatientConnected?: {0}", status.patient);
+		Barrett.Logger.Debug (Barrett.Logger.INFO, "Handedness: {0}", status.handedness);
+		Barrett.Logger.Debug (Barrett.Logger.INFO, "Outerlink: {0}", status.outerlink);
+		Barrett.Logger.Debug (Barrett.Logger.INFO, "IsPatientConnected?: {0}", status.patient);
 	}
 
 	/// <summary>
@@ -182,7 +181,7 @@ public class CustomToolTrajectory
 	/// </summary>
 	public void OnEnable ()
 	{
-		active = false;
+		motionActive = false;
 		robot.SendIsEnabled (true);
 	}
 
@@ -191,7 +190,7 @@ public class CustomToolTrajectory
 	/// </summary>
 	public void OnDisable ()
 	{
-		if (active) {
+		if (motionActive) {
 			Idle ();
 		}
 		robot.SendIsEnabled (false);
@@ -203,10 +202,10 @@ public class CustomToolTrajectory
 	/// </summary>
 	public void StartStop ()
 	{
-		if (active) {
+		if (motionActive) {
 			Idle ();
 		} else {
-			active = true;
+			motionActive = true;
 			Console.WriteLine ("Moving to tool position (" + startPos [0].ToString ("f3") + ", " +
 				startPos [1].ToString ("f3") + ", " + startPos [2].ToString ("f3") + ")");
 			toolForce.Clear ();
@@ -214,7 +213,9 @@ public class CustomToolTrajectory
 
 			// Since startPos was not declared as a Vector<float>, one is created here for
 			// the input to BeginMove().
-			startTraj.BeginMove (toolPos, Vector<float>.Build.DenseOfArray (startPos), 0.2f, 0.2f);
+			float speed = 0.2f;
+			float acceleration = 0.2f;
+			startTraj.BeginMove (toolPos, Vector<float>.Build.DenseOfArray (startPos), speed, acceleration);
 		}
 	}
 
@@ -226,7 +227,7 @@ public class CustomToolTrajectory
 		startTraj.EndMove ();
 		toolForce.Clear ();
 		toolPid.ResetAll ();
-		active = false;
+		motionActive = false;
 		circleTimer.Reset ();
 	}
 
