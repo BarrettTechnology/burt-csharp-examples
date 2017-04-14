@@ -15,7 +15,6 @@ public class SimpleMoveExample
 
 	const int kDof = 3;                  // number of degrees of freedom
 	const int kNumDim = 3;               // number of Cartesian dimensions
-	public static readonly int controlRate = 10;  // Control Rate in ms
 	public static readonly float[] kpJointDefault = { 45, 100,  9 };  // N-m/rad
 	public static readonly float[] kiJointDefault = {  0,   0,  0 };  // N-m/rad-s
 	public static readonly float[] kdJointDefault = { 12,  15,  2 };  // N-m-s/rad
@@ -43,11 +42,13 @@ public class SimpleMoveExample
 	private Vector<float> toolCommand;
 
 	// Trajectory generators create a linear trajector with a trapezoidal velocity profile.
-	// See the Burt C# library API documentation for more details about the characteristics
+	// See the BURT C# library API documentation for more details about the characteristics
 	// of this type of trajectory and how it is generated.
 	private Barrett.Control.LinearTrajectoryVector jointTraj;
 	private Barrett.Control.LinearTrajectoryVector toolTraj;
 
+	// See Example02-HoldPosition for an explanation of the timers used in this example.
+	public static readonly int controlLoopTime = 10;  // in ms
 	private Stopwatch dtTimer = new Stopwatch ();
 	private Stopwatch intervalTimer = new Stopwatch ();
 
@@ -129,7 +130,7 @@ public class SimpleMoveExample
 					.Done ();
 
 			// Calculate how long to wait until next control cycle
-			Thread.Sleep (Math.Max (0, controlRate - (int)intervalTimer.ElapsedMilliseconds));
+			Thread.Sleep (Math.Max (0, controlLoopTime - (int)intervalTimer.ElapsedMilliseconds));
 			intervalTimer.Restart ();
 		}
 	}
@@ -222,11 +223,12 @@ public class SimpleMoveExample
 	//    jointTraj.BeginMove (jointPos, jointCommand, speed, acc);
 	//
 	// The two parameters speed and acc are optional. Both are scalar floats. speed is the norm
-	// of the velocity vector, and acc is the norm of the acceleration vector. For joint
-	// trajectories, the max speed is specified in rad/s, and the max acceleration is specified
-	// in rad/s^2. For tool trajectories, the max tool speed is specified in m/s, and the tool
-	// acceleration is specified in m/s^2. If left unspecified, this command defaults to using
-	// a value of 0.5f for both speed and acceleration.
+	// of the velocity vector, and acc is the norm of the acceleration vector.
+	//
+	// For joint trajectories, no single joint will ever have a speed larger than the speed
+	// specified and all joints will complete their motion at the same time. The max speed is
+	// specified in rad/s, and the max acceleration is specified in rad/s^2. If left unspecified,
+	// this command defaults to using a value of 0.5f for both speed and acceleration.
 	public void MoveToJoint ()
 	{
 		if (toolActive || jointActive)
@@ -253,12 +255,13 @@ public class SimpleMoveExample
 	//    jointTraj.BeginMove (jointPos, jointCommand, speed, acc);
 	//
 	// The two parameters speed and acc are optional. Both are scalar floats. speed is the norm
-	// of the velocity vector, and acc is the norm of the acceleration vector. For joint
-	// trajectories, the max speed is specified in rad/s, and the max acceleration is specified
-	// in rad/s^2. For tool trajectories, the max tool speed is specified in m/s, and the tool
-	// acceleration is specified in m/s^2. If left unspecified, this command defaults to using
-	// a value of 0.5f for both speed and acceleration. For tool movements, it is currently
-	// recommended to keep the speed between 0.2f and 0.7f.
+	// of the velocity vector, and acc is the norm of the acceleration vector.
+	//
+	// For tool trajectories, the max speed is specified in m/s, and the max acceleration is
+	// specified in m/s^2. If left unspecified, this command defaults to using a value of 0.5f
+	// for both speed and acceleration. It is currently recommended to keep the max speed between
+	// 0.2f and 0.7f.
+	// 
 	public void MoveToTool ()
 	{
 		if (toolActive || jointActive)

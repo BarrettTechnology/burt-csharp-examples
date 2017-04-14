@@ -17,7 +17,6 @@ public class HoldPositionExample
 
 	public static readonly int kDof = 3;     // degrees of freedom
 	public static readonly int kNumDim = 3;  // Cartesian dims
-	public static readonly int controlLoopTime = 10;  // in ms
 	public static readonly float[] kpJointDefault = { 45, 100,  9 };  // N-m/rad
 	public static readonly float[] kiJointDefault = {  0,   0,  0 };  // N-m/rad-s
 	public static readonly float[] kdJointDefault = { 12,  15,  2 };  // N-m-s/rad
@@ -40,8 +39,22 @@ public class HoldPositionExample
 	private const float lowpassFilterFreq = 30.0f;  // rad/s
 	private bool jointHolding = false;
 	private bool toolHolding = false;
-	private Stopwatch dtTimer = new Stopwatch ();
+
+	// Timers used for control. controlLoopTime specifies the desired time for each control cycle.
+	//
+	// The intervalTimer measures how long the control cycle took to execute so the program knows
+	// how long to sleep before starting the next one. It needs to be reset at the end of each
+	// cycle to count properly. This example uses millisecond precision in the Sleep call at the
+	// end of the control loop.
+	//
+	// The dtTimer measures the time since the controller was last updated, with the goal of
+	// getting a more accurate time measurement as an input to the controller. Theoretically,
+	// dt is equal to the control loop time, but this would get a more accurate value. A separate
+	// timer is used becuase intervalTimer is reset at the wrong time to work for this purpose. dt
+	// must be calculated before the controller is updated.
+	public static readonly int controlLoopTime = 10;  // in ms
 	private Stopwatch intervalTimer = new Stopwatch ();
+	private Stopwatch dtTimer = new Stopwatch ();
 
 	public HoldPositionExample ()
 	{

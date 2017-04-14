@@ -16,7 +16,6 @@ public class CustomToolTrajectory
 
 	const int kDof = 3;                  // number of degrees of freedom
 	const int kNumDim = 3;               // number of Cartesian dimensions
-	public static readonly int controlRate = 5;  // Control Rate in ms
 
 	private Vector<float> toolPos;      // current position
 	private Vector<float> toolCommand;  // commanded position
@@ -25,8 +24,8 @@ public class CustomToolTrajectory
 	// Characteristics of the circle. Start position is chosen to work for both
 	// right- and left-handed workspaces.
 	readonly float[] startPos = new float[] { 0.6f, 0.0f, 0.225f };
-	const float amplitude = 0.15f;  // meters
-	const float frequency = 2.0f;  // rad/s
+	const float radius = 0.12f;    // meters
+	const float frequency = 0.4f;  // Hz
 
 	private Barrett.Control.PidVector toolPid;
 	private float kpTool = 200.0f;  // N/m
@@ -38,6 +37,10 @@ public class CustomToolTrajectory
 	// A linear trajectory for moving to the start point of the circle
 	private Barrett.Control.LinearTrajectoryVector startTraj;
 
+	// See Example02-HoldPosition for an explanation of the timers used in this example.
+	// The circleTimer is added for generating the circular movement. This timer keeps
+	// track of how long the circular trajectory has been running.
+	public static readonly int controlLoopTime = 10;  // in ms
 	private Stopwatch dtTimer = new Stopwatch ();
 	private Stopwatch intervalTimer = new Stopwatch ();
 	private Stopwatch circleTimer = new Stopwatch ();
@@ -99,8 +102,11 @@ public class CustomToolTrajectory
 					// Calculate the new tool position command. Constant in the z axis and
 					// circular movement in the xy plane.
 					float time = (float)(circleTimer.ElapsedMilliseconds) / 1000f;
-					toolCommand [0] = amplitude * (Mathf.Cos (frequency * time) - 1.0f) + startPos [0];
-					toolCommand [1] = amplitude * Mathf.Sin (frequency * time) + startPos [1];
+					// x position
+					toolCommand [0] = radius * (Mathf.Cos (2f * Mathf.PI * frequency * time) - 1.0f) + startPos [0];
+					// y position
+					toolCommand [1] = radius * Mathf.Sin (2f * Mathf.PI * frequency * time) + startPos [1];
+					// z position
 					toolCommand [2] = startPos [2];
 				}
 				toolForce = toolPid.Update (toolCommand, toolPos, dt);
@@ -113,7 +119,7 @@ public class CustomToolTrajectory
 					.Done ();
 
 			// Calculate how long to wait until next control cycle
-			Thread.Sleep (Math.Max (0, controlRate - (int)intervalTimer.ElapsedMilliseconds));
+			Thread.Sleep (Math.Max (0, controlLoopTime - (int)intervalTimer.ElapsedMilliseconds));
 			intervalTimer.Restart ();
 		}
 	}
