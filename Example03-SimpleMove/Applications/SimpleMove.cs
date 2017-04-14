@@ -15,10 +15,9 @@ public class SimpleMoveExample
 
 	const int kDof = 3;                  // number of degrees of freedom
 	const int kNumDim = 3;               // number of Cartesian dimensions
-	public static readonly int _controlRate = 10; // Control Rate in ms
-	public static readonly float[] kpJointDefault = { 45, 100,  9 };
-	public static readonly float[] kiJointDefault = {  0,   0,  0 };
-	public static readonly float[] kdJointDefault = { 12,  15,  2 };
+	public static readonly float[] kpJointDefault = { 45, 100,  9 };  // N-m/rad
+	public static readonly float[] kiJointDefault = {  0,   0,  0 };  // N-m/rad-s
+	public static readonly float[] kdJointDefault = { 12,  15,  2 };  // N-m-s/rad
 
 	private Vector<float> jointPos;      // current joint positions
 	private Vector<float> jointTorques;  // commanded joint torques
@@ -30,20 +29,28 @@ public class SimpleMoveExample
 	private Vector<float> kpJoint;
 	private Vector<float> kiJoint;
 	private Vector<float> kdJoint;
-	private float kpTool = 200.0f;
-	private float kiTool = 0.0f;
-	private float kdTool = 10.0f;
-	private const float filterFreq = 30.0f;
+	private float kpTool = 200.0f;  // N/m
+	private float kiTool = 0.0f;    // N/m-s
+	private float kdTool = 10.0f;   // N-s/m
+	private const float lowpassFilterFreq = 30.0f;  // rad/s
 	private bool jointActive = false;
 	private bool toolActive = false;
 
-	private Vector<float> jointCommand;  // joint position command
-	private Vector<float> toolCommand;   // tool position command
+	// Position commands should be saved in vectors to be used as inputs to
+	// the PID controllers.
+	private Vector<float> jointCommand;
+	private Vector<float> toolCommand;
+
+	// Trajectory generators create a linear trajector with a trapezoidal velocity profile.
+	// See the BURT C# library API documentation for more details about the characteristics
+	// of this type of trajectory and how it is generated.
 	private Barrett.Control.LinearTrajectoryVector jointTraj;
 	private Barrett.Control.LinearTrajectoryVector toolTraj;
 
-	private Stopwatch _dtTimer = new Stopwatch ();
-	private Stopwatch _intervalTimer = new Stopwatch ();
+	// See Example02-HoldPosition for an explanation of the timers used in this example.
+	public static readonly int controlLoopTime = 10;  // in ms
+	private Stopwatch dtTimer = new Stopwatch ();
+	private Stopwatch intervalTimer = new Stopwatch ();
 
 	public SimpleMoveExample ()
 	{
@@ -56,7 +63,7 @@ public class SimpleMoveExample
 		toolCommand = Vector<float>.Build.Dense (kNumDim);
 		kpJoint = Vector<float>.Build.DenseOfArray (kpJointDefault);
 		kiJoint = Vector<float>.Build.DenseOfArray (kiJointDefault);
-		kdJoint = Vector<float>.Build.DenseOfArray(kdJointDefault);
+		kdJoint = Vector<float>.Build.DenseOfArray (kdJointDefault);
 
 		// Set up communication with the robot and initialize force/torque to zero
 		robot = new RobotClient ();
@@ -68,7 +75,7 @@ public class SimpleMoveExample
 		});
 
 		robot.SendCartesianForces(Vector3.zero);
-//		robot.SendJointTorques(Vector3.zero);
+		robot.SendJointTorques(Vector3.zero);
 
 		// Set up keyboard callbacks
 		keyboardManager = new Barrett.KeyboardManager ();
@@ -84,26 +91,26 @@ public class SimpleMoveExample
 		PrintUsage ();
 
 		// Set up PID controllers
-		jointPid = new Barrett.Control.PidVector (kpJoint, kiJoint, kdJoint, kDof, filterFreq);
-		toolPid = new Barrett.Control.PidVector (kpTool, kiTool, kdTool, kNumDim, filterFreq);
+		jointPid = new Barrett.Control.PidVector (kpJoint, kiJoint, kdJoint, kDof, lowpassFilterFreq);
+		toolPid = new Barrett.Control.PidVector (kpTool, kiTool, kdTool, kNumDim, lowpassFilterFreq);
 
 		// Set up trajectory generators
 		jointTraj = new Barrett.Control.LinearTrajectoryVector (kDof);
 		toolTraj = new Barrett.Control.LinearTrajectoryVector (kNumDim);
 
-		// Start the _dtTimer
-		_dtTimer.Reset ();
-		_dtTimer.Start ();
+		// Start the dtTimer
+		dtTimer.Reset ();
+		dtTimer.Start ();
 
 		// Loop: calculate forces/torques at every timestep based on current
-		// state feedback from the robot
+		// state feedback from the robot.
 		bool running = true;
-		_intervalTimer.Reset ();
+		intervalTimer.Reset ();
 		while (running) {
 			running = ReadKeyPress ();
 
-			float dt = (float) _dtTimer.ElapsedTicks / (float) Stopwatch.Frequency;
-			_dtTimer.Restart ();
+			float dt = (float) dtTimer.ElapsedTicks / (float) Stopwatch.Frequency;
+			dtTimer.Restart ();
 
 			if (jointActive) {
 				jointTraj.Update ();
@@ -123,8 +130,8 @@ public class SimpleMoveExample
 					.Done ();
 
 			// Calculate how long to wait until next control cycle
-			Thread.Sleep (Math.Max (0, _controlRate - (int)_intervalTimer.ElapsedMilliseconds));
-			_intervalTimer.Restart ();
+			Thread.Sleep (Math.Max (0, controlLoopTime - (int)intervalTimer.ElapsedMilliseconds));
+			intervalTimer.Restart ();
 		}
 	}
 
@@ -149,10 +156,8 @@ public class SimpleMoveExample
 	/// </summary>
 	public void PrintInfo ()
 	{
-		Console.WriteLine ("Joint positions: (" + jointPos [0] + ", " +
-			jointPos [1] + ", " + jointPos [2] + ")");
-		Console.WriteLine ("Tool position: (" + toolPos [0] + ", " +
-			toolPos [1] + ", " + toolPos [2] + ")");
+		Console.WriteLine ("Joint positions: {0}", jointPos.ToVector3().ToString ("f3"));
+		Console.WriteLine ("Tool position: {0}", toolPos.ToVector3().ToString ("f3"));
 	}
 
 	/// <summary>
@@ -205,12 +210,25 @@ public class SimpleMoveExample
 	/// </summary>
 	public void OnDisable ()
 	{
+		OnIdle ();
 		robot.SendIsEnabled (false);
 	}
 
 	/// <summary>
 	/// Begins a movement to the specified joint position.
 	/// </summary>
+	//
+	// Here, the BeginMove () command is used to start the linear trajectory:
+	//
+	//    jointTraj.BeginMove (jointPos, jointCommand, speed, acc);
+	//
+	// The two parameters speed and acc are optional. Both are scalar floats. speed is the norm
+	// of the velocity vector, and acc is the norm of the acceleration vector.
+	//
+	// For joint trajectories, no single joint will ever have a speed larger than the speed
+	// specified and all joints will complete their motion at the same time. The max speed is
+	// specified in rad/s, and the max acceleration is specified in rad/s^2. If left unspecified,
+	// this command defaults to using a value of 0.5f for both speed and acceleration.
 	public void MoveToJoint ()
 	{
 		if (toolActive || jointActive)
@@ -231,6 +249,19 @@ public class SimpleMoveExample
 	/// <summary>
 	/// Begins a movement to the specified tool position.
 	/// </summary>
+	//
+	// Here, the BeginMove () command is used to start the linear trajectory:
+	//
+	//    jointTraj.BeginMove (jointPos, jointCommand, speed, acc);
+	//
+	// The two parameters speed and acc are optional. Both are scalar floats. speed is the norm
+	// of the velocity vector, and acc is the norm of the acceleration vector.
+	//
+	// For tool trajectories, the max speed is specified in m/s, and the max acceleration is
+	// specified in m/s^2. If left unspecified, this command defaults to using a value of 0.5f
+	// for both speed and acceleration. It is currently recommended to keep the max speed between
+	// 0.2f and 0.7f.
+	// 
 	public void MoveToTool ()
 	{
 		if (toolActive || jointActive)
@@ -240,8 +271,7 @@ public class SimpleMoveExample
 		else if (ParsePositions (ref toolCommand))
 		{
 			toolActive = true;
-			Console.WriteLine ("Moving to tool position (" + toolCommand [0] + ", " +
-				toolCommand [1] + ", " + toolCommand [2] + ")");
+			Console.WriteLine ("Moving to tool position (" + toolCommand.ToVector3 ().ToString ("f3") + ")");
 			toolTraj.BeginMove (toolPos, toolCommand);
 			toolForce.Clear ();
 			toolPid.ResetAll ();
