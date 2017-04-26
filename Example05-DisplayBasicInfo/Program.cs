@@ -1,4 +1,4 @@
-﻿using System;
+﻿using Mono.Options;
 
 namespace Example05DisplayBasicInfo
 {
@@ -6,7 +6,7 @@ namespace Example05DisplayBasicInfo
 	{
 		public static void Main (string[] args)
 		{
-			Console.WriteLine ("Hello World!");
+			new DisplayBasicInfo ();
 		}
 	}
 }

@@ -35,6 +35,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Mono.Options\Options.cs" />
+    <Compile Include="Applications\DisplayBasicInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -68,8 +69,10 @@
     <Reference Include="UnityEngine">
       <HintPath>..\dll\UnityEngine.dll</HintPath>
     </Reference>
+    <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Mono.Options\" />
+    <Folder Include="Applications\" />
   </ItemGroup>
 </Project>
