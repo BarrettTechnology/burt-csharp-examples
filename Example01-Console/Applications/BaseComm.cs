@@ -21,7 +21,6 @@ public class BaseCommExample
 	/// </summary>
 	public BaseCommExample ()
 	{
-		
 		// Set up communication with the robot and initialize force to zero
 		robot = new RobotClient ();
 		var version = robot.GetVersion ();
@@ -43,7 +42,7 @@ public class BaseCommExample
 		while (running) {
 			running = ReadKeyPress ();
 			Thread.Sleep (50);
-			robot.SendCartesianForces (new Vector4 (0, 0, 0, 0));
+			robot.SendCartesianForces (Vector3.zero);
 		}
 	}
 
