@@ -5,12 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{A6E1BC8A-6F6E-4047-A5E9-70D55DA78255}</ProjectGuid>
+    <ProjectGuid>{2541E528-2853-4393-A6FD-BBF575D70C97}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>Example04CustomToolTrajectory</RootNamespace>
-    <AssemblyName>Example04-CustomToolTrajectory</AssemblyName>
+    <RootNamespace>Example05DisplayBasicInfo</RootNamespace>
+    <AssemblyName>Example05-DisplayBasicInfo</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <ReleaseVersion>0.2</ReleaseVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
@@ -36,7 +35,6 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Mono.Options\Options.cs" />
-    <Compile Include="Applications\CustomToolTrajectory.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -64,7 +62,6 @@
     <Reference Include="RSG.Promise">
       <HintPath>..\dll\RSG.Promise.dll</HintPath>
     </Reference>
-    <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
@@ -74,6 +71,5 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Mono.Options\" />
-    <Folder Include="Applications\" />
   </ItemGroup>
 </Project>
