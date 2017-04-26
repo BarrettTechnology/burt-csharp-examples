@@ -94,6 +94,9 @@ public class DisplayBasicInfo
 			Thread.Sleep (50);
 			robot.SendCartesianForces (Vector3.zero);
 		}
+
+		Console.Write ("Quitting.");
+		Environment.Exit (0);
 	}
 
 	/// <summary>
@@ -199,6 +202,9 @@ public class DisplayBasicInfo
 			// Handle the new command
 			string keyPressed = Console.ReadKey (false).KeyChar.ToString ();
 			keyboardManager.HandleKeyPress (keyPressed);
+			if (keyPressed.Equals ("q") || keyPressed.Equals ("Q")) {
+				return false;
+			}
 		}
 		return true;
 	}
