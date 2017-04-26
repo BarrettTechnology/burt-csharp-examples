@@ -63,15 +63,6 @@ public class DisplayBasicInfo
 		Console.SetCursorPosition (left, line);
 		Console.WriteLine ("Outer link status:");
 
-		// Move the cursor to a place that is nice to display user input
-		line += 3;
-		Console.SetCursorPosition (0, line);
-		Console.Write(new string(' ', Console.WindowWidth));
-		line++;
-		Console.SetCursorPosition (0, line + 1);
-		Console.Write(new string(' ', Console.WindowWidth));
-		Console.SetCursorPosition (0, line);
-
 		// Set the start position on each line for the data. Make sure there is enough space
 		// for your labels.
 		left = 30;
@@ -95,11 +86,8 @@ public class DisplayBasicInfo
 			Console.SetCursorPosition(left, line);
 			Console.Write (outerlinkStatus + "       ");
 
+			// Move the cursor to a place that is nice to display user input
 			line += 3;
-			Console.SetCursorPosition (0, line);
-			Console.Write(new string(' ', Console.WindowWidth));
-			Console.SetCursorPosition (0, line + 1);
-			Console.Write(new string(' ', Console.WindowWidth));
 			Console.SetCursorPosition (0, line);
 			running = ReadKeyPress ();
 
@@ -198,6 +186,17 @@ public class DisplayBasicInfo
 	public bool ReadKeyPress ()
 	{
 		if (Console.KeyAvailable) {
+			// Clear the previous command
+			int line = Console.CursorTop;
+			Console.SetCursorPosition (0, line);
+			Console.Write(new string(' ', Console.WindowWidth));
+			Console.SetCursorPosition (0, line + 1);
+			Console.Write(new string(' ', Console.WindowWidth));
+			Console.SetCursorPosition (0, line + 2);
+			Console.Write(new string(' ', Console.WindowWidth));
+			Console.SetCursorPosition (0, line);
+
+			// Handle the new command
 			string keyPressed = Console.ReadKey (false).KeyChar.ToString ();
 			keyboardManager.HandleKeyPress (keyPressed);
 		}
