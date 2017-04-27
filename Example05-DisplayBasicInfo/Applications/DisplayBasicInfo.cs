@@ -15,6 +15,10 @@ public class DisplayBasicInfo
 	public RobotClient robot;
 	public Barrett.KeyboardManager keyboardManager;
 
+	// Initialize all the state information to default values. These will be printed
+	// to the console until the first state update is received.
+	// The default values are all zeroes for Vector3 types and error states for the
+	// Enum types.
 	Vector3 tool_position = Vector3.zero;
 	Vector3 tool_velocity = Vector3.zero;
 	Vector3 joint_position = Vector3.zero;
@@ -178,7 +182,7 @@ public class DisplayBasicInfo
 	public void OnHome ()
 	{
 		Barrett.Logger.Debug (Barrett.Logger.WARNING, "Make sure robot is disabled and placed in the wing position." +
-			" Then press enter to continue.");
+			" Then press <Enter> to continue.");
 		Console.ReadLine ();
 		robot.SendIsHomed (false);
 		Thread.Sleep (50);
@@ -210,7 +214,9 @@ public class DisplayBasicInfo
 	{
 		if (Console.KeyAvailable) {
 			// Clear the previous command. Since the amount of text printed by the previous
-			// command is unknown, clear the entire window below the current cursor position.
+			// command is unknown, clear the everything below the current cursor position.
+			// Note that the cursor is assumed to be already positioned within the designated
+			// area for user input.
 			int line = Console.CursorTop;
 			ClearLine (line, (uint)(Console.WindowHeight - line));
 			Console.SetCursorPosition (0, line);

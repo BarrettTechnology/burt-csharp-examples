@@ -86,7 +86,7 @@ public class BaseCommExample
 	public void OnHome ()
 	{
 		Barrett.Logger.Debug (Barrett.Logger.WARNING, "Make sure robot is disabled and placed in the wing position." +
-			" Then press enter to continue.");
+			" Then press <Enter> to continue.");
 		Console.ReadLine ();
 		robot.SendIsHomed (false);
 		Thread.Sleep (50);
