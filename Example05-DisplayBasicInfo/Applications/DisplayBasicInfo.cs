@@ -26,12 +26,12 @@ public class DisplayBasicInfo
 	/// </summary>
 	public DisplayBasicInfo ()
 	{
-		// Set up communication with the robot and initialize force to zero
+		// Set up communication with the robot and initialize force to zero.
 		robot = new RobotClient ();
 		SubscribeToUpdates ();
 		robot.SendCartesianForces (Vector3.zero);
 
-		// Set up keyboard callbacks
+		// Set up keyboard callbacks.
 		keyboardManager = new Barrett.KeyboardManager ();
 		keyboardManager.SetDebug (true); // print key pressed
 		keyboardManager.AddKeyPressCallback ("q", Close);
@@ -45,49 +45,35 @@ public class DisplayBasicInfo
 		Console.WriteLine ();
 		int top = Console.CursorTop;
 
-		// Print labels, which do not change. Add an offset on the left side for readability.
+		// Print labels, which do not change. Add an offset on the left side for readability
+		// and specify the length of the strings to clear any text that already exists in
+		// that space. Make sure that the length is longer than your strings to leave enough
+		// space.
 		int line = top;
 		int left = 10;
-		Console.SetCursorPosition (left, line);
-		Console.WriteLine ("Joint positions:");
-		line++;
-		Console.SetCursorPosition (left, line);
-		Console.WriteLine ("Tool position:");
-		line++;
-		Console.SetCursorPosition (left, line);
-		Console.WriteLine ("Tool Velocity:");
-		line++;
-		Console.SetCursorPosition (left, line);
-		Console.WriteLine ("Handedness:");
-		line++;
-		Console.SetCursorPosition (left, line);
-		Console.WriteLine ("Outer link status:");
+		int length = 20;
+		PrintAtPosition (left, line++, "Joint positions:", length);
+		PrintAtPosition (left, line++, "Tool position:", length);
+		PrintAtPosition (left, line++, "Tool Velocity:", length);
+		PrintAtPosition (left, line++, "Handedness:", length);
+		PrintAtPosition (left, line++, "Outer link status:", length);
 
-		// Set the start position on each line for the data. Make sure there is enough space
-		// for your labels.
-		left = 30;
+		// Set the start position on each line for the data.
+		left += length;
+		length = 30;
 
-		// Loop: send zero force and display most recent state info
+		// Loop: Display most recent state info, check for new key presses, and send zero force.
 		bool running = true;
 		while (running) {
 			line = top;
-			Console.SetCursorPosition(left, line);
-			Console.Write (joint_position.ToString ("F4") + "       ");
-			line++;
-			Console.SetCursorPosition(left, line);
-			Console.Write (tool_position.ToString ("F4") + "       ");
-			line++;
-			Console.SetCursorPosition(left, line);
-			Console.Write (tool_velocity.ToString ("F4") + "       ");
-			line++;
-			Console.SetCursorPosition(left, line);
-			Console.Write (handedness + "       ");
-			line++;
-			Console.SetCursorPosition(left, line);
-			Console.Write (outerlinkStatus + "       ");
+			PrintAtPosition (left, line++, joint_position.ToString ("F4"), length);
+			PrintAtPosition (left, line++, tool_position.ToString ("F4"), length);
+			PrintAtPosition (left, line++, tool_velocity.ToString ("F4"), length);
+			PrintAtPosition (left, line++, handedness.ToString (), length);
+			PrintAtPosition (left, line++, outerlinkStatus.ToString (), length);
 
-			// Move the cursor to a place that is nice to display user input
-			line += 3;
+			// Move the cursor to a nice place to display user input.
+			line += 2;
 			Console.SetCursorPosition (0, line);
 			running = ReadKeyPress ();
 
@@ -97,6 +83,41 @@ public class DisplayBasicInfo
 
 		Console.Write ("Quitting.");
 		Environment.Exit (0);
+	}
+
+	/// <summary>
+	/// Prints the specified text at the desired cursor position. If a length is specified as
+	/// the fourth argument, the string will be either truncated to that length or padded
+	/// with whitespace to that length. Padding with whitespace has the effect of clearing
+	/// text previously written to that position.
+	/// </summary>
+	/// <param name="left">Position of the string from the left side of the window.</param>
+	/// <param name="top">Position of the string from the top of the window.</param>
+	/// <param name="str">String to be printed.</param>
+	/// <param name="length">(optional) Length of the string.</param>
+	public void PrintAtPosition (int left, int top, string str, int length = -1)
+	{
+		// Pad the string with zeroes if needed, or shorten the string if needed.
+		if (length > str.Length) {
+			str += new string (' ', length - str.Length);
+		} else if ((length >= 0) && (length < str.Length)) {
+			str = str.Substring (0, length);
+		}
+
+		Console.SetCursorPosition(left, top);
+		Console.Write (str);
+	}
+
+	/// <summary>
+	/// Clears the specified line(s) of text.
+	/// </summary>
+	/// <param name="line">The position of the line from the top of the window.</param>
+	/// <param name="num">(optional) The number of lines to clear, default 1.</param>
+	public void ClearLine (int line, uint num = 1)
+	{
+		for (uint i = 0; i < num; i++) {
+			PrintAtPosition (0, line++, "", Console.WindowWidth);
+		}
 	}
 
 	/// <summary>
@@ -112,8 +133,7 @@ public class DisplayBasicInfo
 	}
 
 	/// <summary>
-	/// Handles state information received from the robot. Prints tool position
-	/// and velocity.
+	/// Handles state information received from the robot.
 	/// </summary>
 	public void OnReceiveServerUpdate (ServerUpdate update)
 	{
@@ -123,7 +143,7 @@ public class DisplayBasicInfo
 	}
 
 	/// <summary>
-	/// Prints status information received from the robot.
+	/// Handles status information received from the robot.
 	/// </summary>
 	private void OnReceiveRobotStatus (Barrett.CoAP.MsgTypes.RobotStatus status)
 	{
@@ -189,14 +209,10 @@ public class DisplayBasicInfo
 	public bool ReadKeyPress ()
 	{
 		if (Console.KeyAvailable) {
-			// Clear the previous command
+			// Clear the previous command. Since the amount of text printed by the previous
+			// command is unknown, clear the entire window below the current cursor position.
 			int line = Console.CursorTop;
-			Console.SetCursorPosition (0, line);
-			Console.Write(new string(' ', Console.WindowWidth));
-			Console.SetCursorPosition (0, line + 1);
-			Console.Write(new string(' ', Console.WindowWidth));
-			Console.SetCursorPosition (0, line + 2);
-			Console.Write(new string(' ', Console.WindowWidth));
+			ClearLine (line, (uint)(Console.WindowHeight - line));
 			Console.SetCursorPosition (0, line);
 
 			// Handle the new command
