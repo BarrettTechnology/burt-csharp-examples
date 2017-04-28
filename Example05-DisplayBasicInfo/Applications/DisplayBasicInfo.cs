@@ -1,8 +1,6 @@
 using System;
 using System.Text;
-using System.Collections;
 using System.Threading;
-using MsgPack;
 using Barrett.CoAP;
 using Barrett.CoAP.MsgTypes;
 using UnityEngine;
@@ -182,7 +180,7 @@ public class DisplayBasicInfo
 	public void OnHome ()
 	{
 		Barrett.Logger.Debug (Barrett.Logger.WARNING, "Make sure robot is disabled and placed in the wing position." +
-			" Then press <Enter> to continue.");
+			"\nThen press <Enter> to continue.");
 		Console.ReadLine ();
 		robot.SendIsHomed (false);
 		Thread.Sleep (50);
