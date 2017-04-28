@@ -21,7 +21,6 @@ public class BaseCommExample
 	/// </summary>
 	public BaseCommExample ()
 	{
-		
 		// Set up communication with the robot and initialize force to zero
 		robot = new RobotClient ();
 		var version = robot.GetVersion ();
@@ -43,7 +42,7 @@ public class BaseCommExample
 		while (running) {
 			running = ReadKeyPress ();
 			Thread.Sleep (50);
-			robot.SendCartesianForces (new Vector4 (0, 0, 0, 0));
+			robot.SendCartesianForces (Vector3.zero);
 		}
 	}
 
@@ -87,7 +86,7 @@ public class BaseCommExample
 	public void OnHome ()
 	{
 		Barrett.Logger.Debug (Barrett.Logger.WARNING, "Make sure robot is disabled and placed in the wing position." +
-			" Then press enter to continue.");
+			"\nThen press <Enter> to continue.");
 		Console.ReadLine ();
 		robot.SendIsHomed (false);
 		Thread.Sleep (50);
