@@ -34,7 +34,6 @@ public class SpringExample
 										   // this uses the same logic as jointSpringPos; when a spring is created
 										   // normal to the x axis, only cartSpringPos[0] is updated
 	private Vector<float> toolForce;       // commanded tool force
-
 	private Vector<float> kpJoint;  // Gain for joint spring
 	private float kpTool = 200.0f;  // Gain for Cartesian spring in N/m
 	private const float lowpassFilterFreq = 30.0f;  // rad/s
@@ -90,7 +89,7 @@ public class SpringExample
 		keyboardManager.AddKeyPressCallback ("1", JointSpring);
 		keyboardManager.AddKeyPressCallback ("2", JointSpring);
 		keyboardManager.AddKeyPressCallback ("3", JointSpring);
-		keyboardManager.AddKeyPressCallback ("x", CartesianSpring);  // activate spring normal to x-axis
+		keyboardManager.AddKeyPressCallback ("x", CartesianSpring);
 		keyboardManager.AddKeyPressCallback ("y", CartesianSpring);
 		keyboardManager.AddKeyPressCallback ("z", CartesianSpring);
 		keyboardManager.AddKeyPressCallback ("r", RemoveAllSprings);
@@ -120,46 +119,6 @@ public class SpringExample
 	}
 
 	/// <summary>
-	/// Calculates the joint spring torques based on the current joint positions and joint spring locations.
-	/// </summary>
-	/// <returns>The joint spring torques.</returns>
-	public Vector<float> CalcJointSpringTorques ()
-	{
-		Vector<float> jointSpringTorques = Vector<float>.Build.Dense (kDof);
-		for (int j = 0; j < kDof; j++) {
-			if (jointSpringEnabled [j]) {
-				float dist = jointPos [j] - jointSpringPos [j];
-				if (dist > 0) {  // If the joint is within the spring range
-					jointSpringTorques [j] = -(dist) * kpJoint [j];
-				}
-			}
-		}
-		return jointSpringTorques;
-	}
-
-	/// <summary>
-	/// Calculates the Cartesian spring forces based on the current tool position and Cartesian spring locations.
-	/// </summary>
-	/// <returns>The cartesian spring forces.</returns>
-	public Vector<float> CalcCartesianSpringForces()
-	{
-		Vector<float> normal = Vector<float>.Build.Dense (kNumDim);
-		Vector<float> cartSpringForces = Vector<float>.Build.Dense (kNumDim);
-		for (int i = 0; i < kNumDim; i++)
-		{
-			if (cartesianSpringEnabled [i]) {
-				normal [i] = 1.0f;
-				float penetration_depth = normal.DotProduct (cartSpringPos.Subtract(toolPos));
-				if (penetration_depth > 0) {
-					cartSpringForces [i] = kpTool * penetration_depth;   
-				}
-				normal[i] = 0.0f;
-			}
-		}
-		return cartSpringForces;
-	}
-
-	/// <summary>
 	/// Disables all joint and cartesian springs.
 	/// </summary>
 	public void RemoveAllSprings()
@@ -180,30 +139,38 @@ public class SpringExample
 		Barrett.Logger.Debug (Barrett.Logger.INFO, "\t1: Toggle joint 1 spring");
 		Barrett.Logger.Debug (Barrett.Logger.INFO, "\t2: Toggle joint 2 spring");
 		Barrett.Logger.Debug (Barrett.Logger.INFO, "\t3: Toggle joint 3 spring");
-		Barrett.Logger.Debug (Barrett.Logger.INFO, "\tx: Toggle spring normal to x-axis");
-		Barrett.Logger.Debug (Barrett.Logger.INFO, "\ty: Toggle spring normal to y-axis");
-		Barrett.Logger.Debug (Barrett.Logger.INFO, "\tz: Toggle spring normal to z-axis");
+		Barrett.Logger.Debug (Barrett.Logger.INFO, "\tx: Toggle x-axis spring");
+		Barrett.Logger.Debug (Barrett.Logger.INFO, "\ty: Toggle y-axis spring");
+		Barrett.Logger.Debug (Barrett.Logger.INFO, "\tz: Toggle z-axis spring");
 		Barrett.Logger.Debug (Barrett.Logger.INFO, "\tr: Remove all springs");
 		Barrett.Logger.Debug (Barrett.Logger.INFO, "\tp: Print state info");
 		Barrett.Logger.Debug (Barrett.Logger.INFO, "\tq: Quit");
 	}
 
 	/// <summary>
-	/// Prints the current joint positions and tool positions.
+	/// Prints the current joint positions, tool positions, and enabled springs.
 	/// </summary>
 	public void PrintInfo ()
 	{
 		Console.WriteLine ("Joint positions: {0}", jointPos.ToVector3().ToString ("f3"));
 		Console.WriteLine ("Tool position: {0}", toolPos.ToVector3().ToString ("f3"));
-	}
-
-	/// <summary>
-	/// Saves state information received from the robot.
-	/// </summary>
-	private void OnReceiveServerUpdate (Barrett.CoAP.MsgTypes.ServerUpdate update)
-	{
-		toolPos.FromVector3 (update.position);
-		jointPos.FromVector3 (update.joint_position);
+		// Print out which spring(s) are enabled, or that no springs are enabled.
+		bool flag = false;
+		for (int i = 0; i < kDof; i++) {
+			if (jointSpringEnabled [i] == true) {
+				Console.WriteLine ("Joint {0} spring enabled.", i);
+				flag = true;
+			}
+		}
+		for (int i = 0; i < kNumDim; i++) {
+			if (cartesianSpringEnabled [i] == true) {
+				Console.WriteLine ("{0}-axis spring enabled.", ConvertAxisNumberToLetter(i));
+				flag = true;
+			}
+		}
+		if (flag == false) {
+			Console.WriteLine("No springs are enabled.");
+		}
 	}
 
 	/// <summary>
@@ -252,10 +219,13 @@ public class SpringExample
 	/// <summary>
 	/// Creates a virtual spring on the specified joint. The spring will start in the current location
 	/// of that joint and go to the end of the robot's range of motion.
+	/// 
+	/// When KeyboardManager calls this method, the key press that triggered it is passed as an argument.
 	/// </summary>
 	public void JointSpring (string joint = "1")
 	{
 		int jointNum = Convert.ToInt32 (joint) - 1;
+		if (jointNum < 0 || jointNum > kDof) { jointNum = 0; }  // set to joint 1 if out of range
 		if (AnyCartesianSpringEnabled()) {
 			Console.WriteLine ("Press r to remove all Cartesian springs before activating joint spring.");
 			return;
@@ -279,30 +249,13 @@ public class SpringExample
 			Console.WriteLine ("Press r to remove all joint springs before activating a Cartesian spring.\n");
 			return;
 		}
-
-		int axisNum = -1;
-		switch (axis)
-		{
-			case "x":
-				axisNum = 0;
-				break;
-			case "y":
-				axisNum = 1;
-				break;
-			case "z":
-				axisNum = 2;
-				break;
-			default:
-				Console.WriteLine("Invalid Cartesian spring position");
-				break;
-		}
-
+		int axisNum = ConvertAxisLetterToNumber (axis);
 		if (!cartesianSpringEnabled [axisNum]) {
 			cartSpringPos[axisNum] = toolPos[axisNum];
-			Console.WriteLine ("Enabling Cartesian spring normal to {0}-axis.", axis);
+			Console.WriteLine ("Enabling Cartesian spring along {0}-axis.", axis);
 			toolForce.Clear ();
 		} else {
-			Console.WriteLine ("Disabling Cartesian spring normal to {0}-axis.", axis);
+			Console.WriteLine ("Disabling Cartesian spring along {0}-axis.", axis);
 		}
 		cartesianSpringEnabled[axisNum] = !cartesianSpringEnabled[axisNum];
 	}
@@ -321,7 +274,6 @@ public class SpringExample
 		}
 		return anyJointSpringEnabled;
 	}
-
 
 	/// <summary>
 	/// Check if there are any Cartesian springs enabled
@@ -348,5 +300,96 @@ public class SpringExample
 			keyboardManager.HandleKeyPress (keyPressed);
 		}
 		return true;
+	}
+
+	/// <summary>
+	/// Calculates the joint spring torques based on the current joint positions and joint spring locations.
+	/// </summary>
+	/// <returns>The joint spring torques.</returns>
+	private Vector<float> CalcJointSpringTorques ()
+	{
+		Vector<float> jointSpringTorques = Vector<float>.Build.Dense (kDof);
+		for (int j = 0; j < kDof; j++) {
+			if (jointSpringEnabled [j]) {
+				float dist = jointPos [j] - jointSpringPos [j];
+				if (dist > 0) {  // If the joint is within the spring range
+					jointSpringTorques [j] = -(dist) * kpJoint [j];
+				}
+			}
+		}
+		return jointSpringTorques;
+	}
+
+	/// <summary>
+	/// Calculates the Cartesian spring forces based on the current tool position and Cartesian spring locations.
+	/// </summary>
+	/// <returns>The cartesian spring forces.</returns>
+	private Vector<float> CalcCartesianSpringForces()
+	{
+		Vector<float> normal = Vector<float>.Build.Dense (kNumDim);
+		Vector<float> cartSpringForces = Vector<float>.Build.Dense (kNumDim);
+		for (int i = 0; i < kNumDim; i++)
+		{
+			if (cartesianSpringEnabled [i]) {
+				normal [i] = 1.0f;
+				float penetration_depth = normal.DotProduct (cartSpringPos.Subtract(toolPos));
+				if (penetration_depth > 0) {
+					cartSpringForces [i] = kpTool * penetration_depth;   
+				}
+				normal[i] = 0.0f;
+			}
+		}
+		return cartSpringForces;
+	}
+
+	private string ConvertAxisNumberToLetter(int axisNumber)
+	{
+		string axisLetter = "";
+		switch (axisNumber)
+		{
+		case 0:
+			axisLetter = "x";
+			break;
+		case 1:
+			axisLetter = "y";
+			break;
+		case 2:
+			axisLetter = "z";
+			break;
+		default:
+			Console.WriteLine ("Invalid axis number.");
+			break;
+		}
+		return axisLetter;
+	}
+
+	private int ConvertAxisLetterToNumber(string axisLetter)
+	{
+		int axisNumber = 0;
+		switch (axisLetter)
+		{
+		case "x":
+			axisNumber = 0;
+			break;
+		case "y":
+			axisNumber = 1;
+			break;
+		case "z":
+			axisNumber = 2;
+			break;
+		default:
+			Console.WriteLine ("Invalid axis.");
+			break;
+		}
+		return axisNumber;
+	}
+
+	/// <summary>
+	/// Saves state information received from the robot.
+	/// </summary>
+	private void OnReceiveServerUpdate (Barrett.CoAP.MsgTypes.ServerUpdate update)
+	{
+		toolPos.FromVector3 (update.position);
+		jointPos.FromVector3 (update.joint_position);
 	}
 }
