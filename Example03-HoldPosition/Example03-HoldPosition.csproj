@@ -5,10 +5,10 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{69F29E88-12A0-48BE-8C3E-220D1B871142}</ProjectGuid>
+    <ProjectGuid>{EFD9DDED-4CB3-41AB-8C99-0F705531B560}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>Example06Spring</RootNamespace>
-    <AssemblyName>Example06-Spring</AssemblyName>
+    <RootNamespace>Example02HoldPosition</RootNamespace>
+    <AssemblyName>Example03-HoldPosition</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <ReleaseVersion>0.2</ReleaseVersion>
   </PropertyGroup>
@@ -52,27 +52,28 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\dll\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="ProficioClient">
-      <HintPath>..\dll\ProficioClient.dll</HintPath>
-    </Reference>
-    <Reference Include="RSG.Promise">
-      <HintPath>..\dll\RSG.Promise.dll</HintPath>
-    </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="UnityEngine">
       <HintPath>..\dll\UnityEngine.dll</HintPath>
     </Reference>
+    <Reference Include="RSG.Promise">
+      <HintPath>..\dll\RSG.Promise.dll</HintPath>
+    </Reference>
+    <Reference Include="ProficioClient">
+      <HintPath>..\dll\ProficioClient.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Applications\Spring.cs" />
     <Compile Include="Mono.Options\Options.cs" />
+    <Compile Include="Applications\HoldPosition.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Folder Include="Mono.Options\" />
+    <Folder Include="Applications\" />
   </ItemGroup>
 </Project>

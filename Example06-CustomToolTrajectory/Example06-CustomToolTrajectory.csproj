@@ -5,10 +5,10 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{530BE6FE-4F43-4CF1-80AF-8B57F7F1B461}</ProjectGuid>
+    <ProjectGuid>{A6E1BC8A-6F6E-4047-A5E9-70D55DA78255}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>Example03SimpleMove</RootNamespace>
-    <AssemblyName>Example03-SimpleMove</AssemblyName>
+    <RootNamespace>Example04CustomToolTrajectory</RootNamespace>
+    <AssemblyName>Example06-CustomToolTrajectory</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <ReleaseVersion>0.2</ReleaseVersion>
   </PropertyGroup>
@@ -33,7 +33,13 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Mono.Options\Options.cs" />
+    <Compile Include="Applications\CustomToolTrajectory.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
     <Reference Include="coapsharp">
       <HintPath>..\dll\coapsharp.dll</HintPath>
     </Reference>
@@ -52,26 +58,20 @@
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\dll\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="ProficioClient">
+      <HintPath>..\dll\ProficioClient.dll</HintPath>
+    </Reference>
+    <Reference Include="RSG.Promise">
+      <HintPath>..\dll\RSG.Promise.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="UnityEngine">
       <HintPath>..\dll\UnityEngine.dll</HintPath>
     </Reference>
-    <Reference Include="RSG.Promise">
-      <HintPath>..\dll\RSG.Promise.dll</HintPath>
-    </Reference>
-    <Reference Include="ProficioClient">
-      <HintPath>..\dll\ProficioClient.dll</HintPath>
-    </Reference>
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Mono.Options\Options.cs" />
-    <Compile Include="Applications\SimpleMove.cs" />
-  </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Folder Include="Mono.Options\" />
     <Folder Include="Applications\" />

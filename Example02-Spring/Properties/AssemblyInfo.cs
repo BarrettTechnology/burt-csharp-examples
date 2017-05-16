@@ -4,12 +4,12 @@ using System.Runtime.CompilerServices;
 // Information about this assembly is defined by the following attributes.
 // Change them to the values specific to your project.
 
-[assembly: AssemblyTitle ("Example03-SimpleMove")]
+[assembly: AssemblyTitle ("Example02-Spring")]
 [assembly: AssemblyDescription ("")]
 [assembly: AssemblyConfiguration ("")]
 [assembly: AssemblyCompany ("")]
 [assembly: AssemblyProduct ("")]
-[assembly: AssemblyCopyright ("robot")]
+[assembly: AssemblyCopyright ("heather")]
 [assembly: AssemblyTrademark ("")]
 [assembly: AssemblyCulture ("")]
 
