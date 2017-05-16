@@ -5,8 +5,13 @@ using Barrett.CoAP;
 using MathNet.Numerics.LinearAlgebra;
 using UnityEngine;
 using Barrett.Util.ClassExtensions;
+
 /// <summary>
 /// Uses a PID controller to move to a joint position or a tool position.
+/// 
+/// This example heavily builds upon the HoldPosition example. Now, instead of just holding a position,
+/// this code smoothly moves the robot to a position.
+/// This can ultimately be generalized to more complex trajectories, as shown in this CustomToolTrajectory example.
 /// </summary>
 public class SimpleMoveExample
 {
@@ -170,14 +175,14 @@ public class SimpleMoveExample
 	}
 
 	/// <summary>
-	/// Unsubscribes from updates and sends a request to disable the robot.
+	/// Unsubscribes from updates, sends a request to disable the robot, and terminates the process.
 	/// </summary>
 	public void Close ()
 	{
 		robot.UnsubscribeFromServerUpdate ();
 		robot.UnsubscribeFromRobotStatus ();
-
 		OnDisable ();
+		Environment.Exit (0);
 	}
 
 	/// <summary>

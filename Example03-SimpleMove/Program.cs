@@ -1,6 +1,6 @@
 ﻿using Mono.Options;
 
-namespace Example03SimpleMove
+namespace BurtClient.Examples
 {
 	class MainClass
 	{

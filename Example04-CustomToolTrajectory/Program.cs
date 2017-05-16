@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Example04CustomToolTrajectory
+namespace BurtClient.Examples
 {
 	class MainClass
 	{

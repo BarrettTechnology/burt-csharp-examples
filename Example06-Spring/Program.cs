@@ -1,6 +1,6 @@
 ﻿using Mono.Options;
 
-namespace Example07Spring
+namespace BurtClient.Examples
 {
 	class MainClass
 	{

@@ -5,6 +5,7 @@ using Barrett.CoAP;
 using MathNet.Numerics.LinearAlgebra;
 using UnityEngine;
 using Barrett.Util.ClassExtensions;
+
 /// <summary>
 /// Uses a PID controller to follow a custom tool trajectory. In this example, the
 /// custom trajectory is a circle in the horizontal plane.

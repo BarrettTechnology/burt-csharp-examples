@@ -1,6 +1,6 @@
 ﻿using Mono.Options;
 
-namespace Example05DisplayBasicInfo
+namespace BurtClient.Examples
 {
 	class MainClass
 	{

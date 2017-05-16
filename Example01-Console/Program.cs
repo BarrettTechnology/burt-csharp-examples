@@ -1,6 +1,7 @@
 using Mono.Options;
+using System;
 
-namespace Example01Console
+namespace BurtClient.Examples
 {
 	class MainClass
 	{

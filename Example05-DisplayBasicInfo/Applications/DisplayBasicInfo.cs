@@ -7,6 +7,10 @@ using UnityEngine;
 
 /// <summary>
 /// Streams basic state information to the console.
+/// 
+/// Using PrintAtPosition provides an example of how to print nicely formatted data.
+/// This example can be helpful for debugging purposes, and additional information can
+/// be easily added within this framework to debug in a variety of applications.
 /// </summary>
 public class DisplayBasicInfo
 {
@@ -164,13 +168,14 @@ public class DisplayBasicInfo
 	}
 
 	/// <summary>
-	/// Unsubscribes from updates and sends a request to disable the robot.
+	/// Unsubscribes from updates, sends a request to disable the robot, and terminates the process.
 	/// </summary>
 	public void Close ()
 	{
 		robot.UnsubscribeFromServerUpdate ();
 		robot.UnsubscribeFromRobotStatus ();
 		OnDisable ();
+		Environment.Exit (0);
 	}
 
 	/// <summary>

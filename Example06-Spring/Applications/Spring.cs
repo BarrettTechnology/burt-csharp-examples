@@ -9,9 +9,13 @@ using RSG;
 using Barrett.Util.ClassExtensions;
 
 /// <summary>
-/// Creates virtual springs in joint space and Cartesian space by taking keypress user input.
+/// This example introduces commanding joint torques and Cartesian forces by creating virtual springs.
 /// Each spring's location is determined by the current location of the joint/tool when the spring is created.
 /// The springs can be moved by disabling and re-enabling in a different location.
+/// 
+/// This code builds upon the previous code by adding in some member variables to save spring data, calculating
+/// force each control loop, and providing some additional user options to toggle springs.
+/// Many of the methods from the first example are used here as well.
 /// </summary>
 public class SpringExample
 {
@@ -26,8 +30,7 @@ public class SpringExample
 	private Vector<float> jointSpringPos;  // joint position when joint spring is/was enabled for each joint
 										   // this stores positions for each joint spring in one kDof length array
 										   // by only storing the relevant joint's position when a spring is activated
-										   // e.g. when a spring is created on joint 1,
-										   // just jointSpringPos[0] is updated
+										   // e.g. when a spring is created on joint, just jointSpringPos[0] is updated
 	private Vector<float> jointTorques;    // commanded joint torques
 	private Vector<float> toolPos;         // current tool position
 	private Vector<float> cartSpringPos;   // tool position when cartesian spring is/was enabled for each axis
@@ -158,7 +161,7 @@ public class SpringExample
 		bool flag = false;
 		for (int i = 0; i < kDof; i++) {
 			if (jointSpringEnabled [i] == true) {
-				Console.WriteLine ("Joint {0} spring enabled.", i);
+				Console.WriteLine ("Joint {0} spring enabled.", i + 1);
 				flag = true;
 			}
 		}
@@ -174,13 +177,14 @@ public class SpringExample
 	}
 
 	/// <summary>
-	/// Unsubscribes from updates and sends a request to disable the robot.
+	/// Unsubscribes from updates, sends a request to disable the robot, and terminates the process.
 	/// </summary>
 	public void Close ()
 	{
 		robot.UnsubscribeFromServerUpdate ();
 		robot.UnsubscribeFromRobotStatus ();
 		OnDisable ();
+		Environment.Exit (0);
 	}
 
 	/// <summary>
@@ -217,10 +221,12 @@ public class SpringExample
 	}
 
 	/// <summary>
-	/// Creates a virtual spring on the specified joint. The spring will start in the current location
+	/// Creates a virtual spring on the specified joint by saving the current position as the starting point
+	/// of the spring, and by setting jointSpringEnabled[joint] to true. The spring will start in the current location
 	/// of that joint and go to the end of the robot's range of motion.
 	/// 
-	/// When KeyboardManager calls this method, the key press that triggered it is passed as an argument.
+	/// When KeyboardManager calls this method, the key press that triggered it is passed as an argument to specify
+	/// the joint.
 	/// </summary>
 	public void JointSpring (string joint = "1")
 	{
@@ -334,7 +340,7 @@ public class SpringExample
 				normal [i] = 1.0f;
 				float penetration_depth = normal.DotProduct (cartSpringPos.Subtract(toolPos));
 				if (penetration_depth > 0) {
-					cartSpringForces [i] = kpTool * penetration_depth;   
+					cartSpringForces [i] = kpTool * penetration_depth;
 				}
 				normal[i] = 0.0f;
 			}
@@ -342,6 +348,20 @@ public class SpringExample
 		return cartSpringForces;
 	}
 
+	/// <summary>
+	/// Saves state information received from the robot.
+	/// </summary>
+	private void OnReceiveServerUpdate (Barrett.CoAP.MsgTypes.ServerUpdate update)
+	{
+		toolPos.FromVector3 (update.position);
+		jointPos.FromVector3 (update.joint_position);
+	}
+
+	/// <summary>
+	/// Helper function to convert an axis number to the corresponding letter.
+	/// </summary>
+	/// <returns>The axis number to letter.</returns>
+	/// <param name="axisNumber">Axis number.</param>
 	private string ConvertAxisNumberToLetter(int axisNumber)
 	{
 		string axisLetter = "";
@@ -363,6 +383,11 @@ public class SpringExample
 		return axisLetter;
 	}
 
+	/// <summary>
+	/// Helper function to convert an axis letter to the corresponding number.
+	/// </summary>
+	/// <returns>The axis letter to number.</returns>
+	/// <param name="axisLetter">Axis letter.</param>
 	private int ConvertAxisLetterToNumber(string axisLetter)
 	{
 		int axisNumber = 0;
@@ -382,14 +407,5 @@ public class SpringExample
 			break;
 		}
 		return axisNumber;
-	}
-
-	/// <summary>
-	/// Saves state information received from the robot.
-	/// </summary>
-	private void OnReceiveServerUpdate (Barrett.CoAP.MsgTypes.ServerUpdate update)
-	{
-		toolPos.FromVector3 (update.position);
-		jointPos.FromVector3 (update.joint_position);
 	}
 }

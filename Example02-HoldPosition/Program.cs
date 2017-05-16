@@ -1,6 +1,6 @@
 ﻿using Mono.Options;
 
-namespace Example02HoldPosition
+namespace BurtClient.Examples
 {
 	class MainClass
 	{

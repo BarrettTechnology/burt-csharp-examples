@@ -8,7 +8,10 @@ using RSG;
 using Barrett.Util.ClassExtensions;
 
 /// <summary>
-/// Uses a PID controller to hold joint position or tool position.
+/// This example uses a PID controller to constrain the robot to a joint position or tool position.
+/// It uses the same communications, keypress reading, and torque/force sending as in previous examples.
+/// 
+/// Note that with this more involved force control, timing gets more important and is measured by dtTimer.
 /// </summary>
 public class HoldPositionExample
 {
@@ -172,13 +175,14 @@ public class HoldPositionExample
 	}
 
 	/// <summary>
-	/// Unsubscribes from updates and sends a request to disable the robot.
+	/// Unsubscribes from updates, sends a request to disable the robot, and terminates the process.
 	/// </summary>
 	public void Close ()
 	{
 		robot.UnsubscribeFromServerUpdate ();
 		robot.UnsubscribeFromRobotStatus ();
 		OnDisable ();
+		Environment.Exit (0);
 	}
 
 	/// <summary>

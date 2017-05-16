@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example01-Console", "Example01-Console\Example01-Console.csproj", "{C7568C04-9952-43B0-91D8-182D0ABD89C9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example02-HoldPosition", "Example02-HoldPosition\Example02-HoldPosition.csproj", "{EFD9DDED-4CB3-41AB-8C99-0F705531B560}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example03-SimpleMove", "Example03-SimpleMove\Example03-SimpleMove.csproj", "{530BE6FE-4F43-4CF1-80AF-8B57F7F1B461}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example04-CustomToolTrajectory", "Example04-CustomToolTrajectory\Example04-CustomToolTrajectory.csproj", "{A6E1BC8A-6F6E-4047-A5E9-70D55DA78255}"
@@ -12,6 +10,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example05-DisplayBasicInfo", "Example05-DisplayBasicInfo\Example05-DisplayBasicInfo.csproj", "{2541E528-2853-4393-A6FD-BBF575D70C97}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example06-Spring", "Example06-Spring\Example06-Spring.csproj", "{69F29E88-12A0-48BE-8C3E-220D1B871142}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example03-HoldPosition", "Example03-HoldPosition\Example03-HoldPosition.csproj", "{EFD9DDED-4CB3-41AB-8C99-0F705531B560}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
