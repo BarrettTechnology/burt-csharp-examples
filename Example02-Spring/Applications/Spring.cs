@@ -83,7 +83,6 @@ public class SpringExample
 		robot.SendJointTorques (Vector3.zero);
 
 		// Set up keyboard callbacks
-		Console.WriteLine("Spring Example Program");
 		keyboardManager = new Barrett.KeyboardManager ();
 		keyboardManager.SetDebug (true);  // print key pressed
 		keyboardManager.AddKeyPressCallback ("h", OnHome);

@@ -157,7 +157,7 @@ public class CustomToolTrajectory
 	}
 
 	/// <summary>
-	/// Unsubscribes from updates and disables the robot.
+	/// Unsubscribes from updates, sends a request to disable the robot, and terminates the process.
 	/// </summary>
 	public void Close ()
 	{
@@ -165,6 +165,7 @@ public class CustomToolTrajectory
 		robot.UnsubscribeFromRobotStatus ();
 
 		OnDisable ();
+		Environment.Exit (0);
 	}
 
 	/// <summary>
