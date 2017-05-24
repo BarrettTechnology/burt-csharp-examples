@@ -1,7 +1,6 @@
 using Mono.Options;
-using System;
 
-namespace BurtClient.Examples
+namespace BurtSharp.Examples
 {
 	class MainClass
 	{

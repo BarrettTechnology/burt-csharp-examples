@@ -8,7 +8,7 @@ using Barrett.CoAP.MsgTypes;
 using UnityEngine;
 
 /// <summary>
-/// This is a basic robot communication example that introduces how to run the burt from C#.
+/// This is a basic robot communication example that introduces how to run the BURT from C#.
 /// It covers how to use key presses to enable and disable the robot, home the robot, and print state information.
 ///
 /// In order to accomplish this, the code uses a KeyboardManager to call a function based on a keypress and
