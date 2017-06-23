@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Text;
 using System.Threading;
 using Barrett.CoAP;
 using MathNet.Numerics.LinearAlgebra;
@@ -40,11 +41,14 @@ public class CustomToolTrajectory
 
 	// See Example02-HoldPosition for an explanation of the timers used in this example.
 	// The circleTimer is added for generating the circular movement. This timer keeps
-	// track of how long the circular trajectory has been running.
+	// track of how long the circular trajectory has been running. The displayTimer
+	// is added to update the data display at a rate slower than the control loop.
 	public static readonly int controlLoopTime = 10;  // in ms
+	public static readonly int displayUpdateTime = 100;  // in ms
 	private Stopwatch dtTimer = new Stopwatch ();
 	private Stopwatch intervalTimer = new Stopwatch ();
 	private Stopwatch circleTimer = new Stopwatch ();
+	private Stopwatch displayTimer = new Stopwatch ();
 
 	public CustomToolTrajectory ()
 	{
@@ -69,6 +73,26 @@ public class CustomToolTrajectory
 		keyboardManager.AddKeyPressCallback ("q", Close);
 		PrintUsage ();
 
+		// Add some blank lines for readability, then get the cursor position.
+		Console.WriteLine ();
+		Console.WriteLine ();
+		int top = Console.CursorTop;
+
+		// Print labels, which do not change. Add an offset on the left side for readability
+		// and specify the length of the strings to clear any text that already exists in
+		// that space. Make sure that the length is longer than your strings to leave enough
+		// space.
+		int line = top;
+		int left = 10;
+		int length = 20;
+		PrintAtPosition (left, line++, "Commanded position:", length);
+		PrintAtPosition (left, line++, "Actual position:", length);
+		PrintAtPosition (left, line++, "Control force:", length);
+
+		// Set the start position on each line for the data.
+		left += length;
+		length = 30;
+
 		// Set up PID controller
 		toolPid = new Barrett.Control.PidVector (kpTool, kiTool, kdTool, kNumDim, lowpassFilterFreq);
 
@@ -83,6 +107,7 @@ public class CustomToolTrajectory
 		// state feedback from the robot.
 		bool running = true;
 		intervalTimer.Reset ();
+		displayTimer.Reset ();
 		while (running) {
 			running = ReadKeyPress ();
 
@@ -122,6 +147,56 @@ public class CustomToolTrajectory
 			// Calculate how long to wait until next control cycle
 			Thread.Sleep (Math.Max (0, controlLoopTime - (int)intervalTimer.ElapsedMilliseconds));
 			intervalTimer.Restart ();
+
+			// Update the display, if applicable.
+			if ((int)displayTimer.ElapsedMilliseconds >= displayUpdateTime) {
+					line = top;
+					PrintAtPosition (left, line++, toolPos.ToVector3 ().ToString ("F4"), length);
+					PrintAtPosition (left, line++, toolCommand.ToVector3 ().ToString ("F4"), length);
+					PrintAtPosition (left, line++, toolForce.ToVector3 ()ToString ("F4"), length);
+
+					// Move the cursor to a nice place to display user input.
+					line += 2;
+					Console.SetCursorPosition (0, line);
+			}
+		}
+
+		Console.Write ("Quitting.");
+		Environment.Exit (0);
+	}
+
+	/// <summary>
+	/// Prints the specified text at the desired cursor position. If a length is specified as
+	/// the fourth argument, the string will be either truncated to that length or padded
+	/// with whitespace to that length. Padding with whitespace has the effect of clearing
+	/// text previously written to that position.
+	/// </summary>
+	/// <param name="left">Position of the string from the left side of the window.</param>
+	/// <param name="top">Position of the string from the top of the window.</param>
+	/// <param name="str">String to be printed.</param>
+	/// <param name="length">(optional) Length of the string.</param>
+	public void PrintAtPosition (int left, int top, string str, int length = -1)
+	{
+		// Pad the string with zeroes if needed, or shorten the string if needed.
+		if (length > str.Length) {
+			str += new string (' ', length - str.Length);
+		} else if ((length >= 0) && (length < str.Length)) {
+			str = str.Substring (0, length);
+		}
+
+		Console.SetCursorPosition(left, top);
+		Console.Write (str);
+	}
+
+	/// <summary>
+	/// Clears the specified line(s) of text.
+	/// </summary>
+	/// <param name="line">The position of the line from the top of the window.</param>
+	/// <param name="num">(optional) The number of lines to clear, default 1.</param>
+	public void ClearLine (int line, uint num = 1)
+	{
+		for (uint i = 0; i < num; i++) {
+			PrintAtPosition (0, line++, "", Console.WindowWidth);
 		}
 	}
 
