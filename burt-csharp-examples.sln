@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example05-SimpleMove", "Exa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example06a-CustomToolTrajectory", "Example06a-CustomToolTrajectory\Example06a-CustomToolTrajectory.csproj", "{A6E1BC8A-6F6E-4047-A5E9-70D55DA78255}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example06b-CustomJointTrajectory", "Example06b-CustomJointTrajectory\Example06b-CustomJointTrajectory.csproj", "{A6E1BC8A-6F6E-4047-A5E9-70D55DA78255}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -32,8 +34,12 @@ Global
 		{69F29E88-12A0-48BE-8C3E-220D1B871142}.Release|x86.ActiveCfg = Release|x86
 		{69F29E88-12A0-48BE-8C3E-220D1B871142}.Release|x86.Build.0 = Release|x86
 		{A6E1BC8A-6F6E-4047-A5E9-70D55DA78255}.Debug|x86.ActiveCfg = Debug|x86
+		{A6E1BC8A-6F6E-4047-A5E9-70D55DA78255}.Debug|x86.ActiveCfg = Debug|x86
+		{A6E1BC8A-6F6E-4047-A5E9-70D55DA78255}.Debug|x86.Build.0 = Debug|x86
 		{A6E1BC8A-6F6E-4047-A5E9-70D55DA78255}.Debug|x86.Build.0 = Debug|x86
 		{A6E1BC8A-6F6E-4047-A5E9-70D55DA78255}.Release|x86.ActiveCfg = Release|x86
+		{A6E1BC8A-6F6E-4047-A5E9-70D55DA78255}.Release|x86.ActiveCfg = Release|x86
+		{A6E1BC8A-6F6E-4047-A5E9-70D55DA78255}.Release|x86.Build.0 = Release|x86
 		{A6E1BC8A-6F6E-4047-A5E9-70D55DA78255}.Release|x86.Build.0 = Release|x86
 		{C7568C04-9952-43B0-91D8-182D0ABD89C9}.Debug|x86.ActiveCfg = Debug|x86
 		{C7568C04-9952-43B0-91D8-182D0ABD89C9}.Debug|x86.Build.0 = Debug|x86
