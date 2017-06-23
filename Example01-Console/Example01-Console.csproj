@@ -7,7 +7,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{C7568C04-9952-43B0-91D8-182D0ABD89C9}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>Example01Console</RootNamespace>
+    <RootNamespace>BurtSharp.Examples</RootNamespace>
     <AssemblyName>Example01-Console</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <ReleaseVersion>0.2</ReleaseVersion>
