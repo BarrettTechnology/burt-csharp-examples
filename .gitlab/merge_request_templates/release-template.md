@@ -11,11 +11,9 @@
 
 ### Reviewers
 
-- [ ] @heather
 - [ ] @cw
 - [ ] @amyblank
 - [ ] @bz
-- [ ] @jchung
 - [ ] @ps
 
 ### Resources and Documentation

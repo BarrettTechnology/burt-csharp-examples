@@ -40,11 +40,9 @@ To initiate a code review put the following list in your merge requests:
 
 ```
 Reviewers:
-- [ ] @heather
 - [ ] @cw
 - [ ] @amyblank
 - [ ] @bz
-- [ ] @jchung
 - [ ] @ps
 ```
 
