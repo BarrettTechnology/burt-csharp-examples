@@ -10,7 +10,7 @@ using Barrett.Util.ClassExtensions;
 /// Uses a PID controller to follow a custom tool trajectory. In this example, the
 /// custom trajectory is a circle in the horizontal plane.
 /// </summary>
-public class CustomToolTrajectory
+public class CustomJointTrajectory
 {
 	private RobotClient robot;
 	private Barrett.KeyboardManager keyboardManager;
@@ -46,7 +46,7 @@ public class CustomToolTrajectory
 	private Stopwatch intervalTimer = new Stopwatch ();
 	private Stopwatch circleTimer = new Stopwatch ();
 
-	public CustomToolTrajectory ()
+	public CustomJointTrajectory ()
 	{
 		// Initialize vectors
 		toolPos = Vector<float>.Build.Dense (kNumDim);

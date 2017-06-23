@@ -6,7 +6,7 @@ namespace BurtSharp.Examples
 	{
 		public static void Main (string[] args)
 		{
-			new CustomToolTrajectory ();
+			new CustomJointTrajectory ();
 		}
 	}
 }
