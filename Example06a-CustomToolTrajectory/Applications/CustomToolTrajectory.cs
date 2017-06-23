@@ -153,7 +153,7 @@ public class CustomToolTrajectory
 					line = top;
 					PrintAtPosition (left, line++, toolPos.ToVector3 ().ToString ("F4"), length);
 					PrintAtPosition (left, line++, toolCommand.ToVector3 ().ToString ("F4"), length);
-					PrintAtPosition (left, line++, toolForce.ToVector3 ()ToString ("F4"), length);
+					PrintAtPosition (left, line++, toolForce.ToVector3 ().ToString ("F4"), length);
 
 					// Move the cursor to a nice place to display user input.
 					line += 2;

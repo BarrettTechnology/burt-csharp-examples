@@ -155,7 +155,7 @@ public class CustomJointTrajectory
 				line = top;
 				PrintAtPosition (left, line++, jointPos.ToVector3 ().ToString ("F4"), length);
 				PrintAtPosition (left, line++, jointCommand.ToVector3 ().ToString ("F4"), length);
-				PrintAtPosition (left, line++, jointTorque.ToVector3 ()ToString ("F4"), length);
+				PrintAtPosition (left, line++, jointTorque.ToVector3 ().ToString ("F4"), length);
 
 				// Move the cursor to a nice place to display user input.
 				line += 2;
