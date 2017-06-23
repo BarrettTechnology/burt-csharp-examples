@@ -7,8 +7,8 @@ using UnityEngine;
 using Barrett.Util.ClassExtensions;
 
 /// <summary>
-/// Uses a PID controller to follow a custom tool trajectory. In this example, the
-/// custom trajectory is a circle in the horizontal plane.
+/// Uses a PID controller to follow a custom joint trajectory. In this example, the
+/// custom trajectory is a circle in joints 2 and 3.
 /// </summary>
 public class CustomJointTrajectory
 {
@@ -16,11 +16,10 @@ public class CustomJointTrajectory
 	private Barrett.KeyboardManager keyboardManager;
 
 	const int kDof = 3;                  // number of degrees of freedom
-	const int kNumDim = 3;               // number of Cartesian dimensions
 
-	private Vector<float> toolPos;      // current position
-	private Vector<float> toolCommand;  // commanded position
-	private Vector<float> toolForce;    // commanded force
+	private Vector<float> jointPos;      // current position
+	private Vector<float> jointCommand;  // commanded position
+	private Vector<float> jointTorque;   // commanded torque
 
 	// Characteristics of the circle. Start position is chosen to work for both
 	// right- and left-handed workspaces.
@@ -28,10 +27,13 @@ public class CustomJointTrajectory
 	const float radius = 0.12f;    // meters
 	const float frequency = 0.4f;  // Hz
 
-	private Barrett.Control.PidVector toolPid;
-	private float kpTool = 200.0f;  // N/m
-	private float kiTool = 0.0f;    // N/m-s
-	private float kdTool = 10.0f;   // N-s/m
+	private Barrett.Control.PidVector jointPid;
+	public static readonly float[] kpJointDefault = { 45, 100,  9 };  // N-m/rad
+	public static readonly float[] kiJointDefault = {  0,   0,  0 };  // N-m/rad-s
+	public static readonly float[] kdJointDefault = { 12,  15,  2 };  // N-m-s/rad
+	private Vector<float> kpJoint;
+	private Vector<float> kiJoint;
+	private Vector<float> kdJoint;
 	private const float lowpassFilterFreq = 30.0f;  // rad/s
 	private bool motionActive = false;
 
@@ -49,9 +51,12 @@ public class CustomJointTrajectory
 	public CustomJointTrajectory ()
 	{
 		// Initialize vectors
-		toolPos = Vector<float>.Build.Dense (kNumDim);
-		toolForce = Vector<float>.Build.Dense (kNumDim);
-		toolCommand = Vector<float>.Build.Dense (kNumDim);
+		jointPos = Vector<float>.Build.Dense (kDof);
+		jointTorque = Vector<float>.Build.Dense (kDof);
+		jointCommand = Vector<float>.Build.Dense (kDof);
+		kpJoint = Vector<float>.Build.DenseOfArray (kpJointDefault);
+		kiJoint = Vector<float>.Build.DenseOfArray (kiJointDefault);
+		kdJoint = Vector<float>.Build.DenseOfArray (kdJointDefault);
 
 		// Set up communication with the robot and initialize force/torque to zero
 		robot = new RobotClient ();
@@ -70,10 +75,10 @@ public class CustomJointTrajectory
 		PrintUsage ();
 
 		// Set up PID controller
-		toolPid = new Barrett.Control.PidVector (kpTool, kiTool, kdTool, kNumDim, lowpassFilterFreq);
+		jointPid = new Barrett.Control.PidVector (kpJoint, kiJoint, kdJoint, kDof, lowpassFilterFreq);
 
 		// Set up trajectory generator
-		startTraj = new Barrett.Control.LinearTrajectoryVector (kNumDim);
+		startTraj = new Barrett.Control.LinearTrajectoryVector (kDof);
 
 		// Start the dtTimer
 		dtTimer.Reset ();
@@ -93,29 +98,26 @@ public class CustomJointTrajectory
 				if (!startTraj.DoneMoving) {
 					// Follow the linear trajectory to the start position until it is done.
 					startTraj.Update ();
-					startTraj.Position.CopyTo (toolCommand);
+					startTraj.Position.CopyTo (jointCommand);
 				} else {
 					// Start the timer for the circle, if it's not already started.
 					if (!circleTimer.IsRunning) {
 						circleTimer.Start ();
 					}
 
-					// Calculate the new tool position command. Constant in the z axis and
-					// circular movement in the xy plane.
+					// Calculate the new joint position command. Constant in joint 0 and
+					// cyclic movement in joints 1 and 2.
 					float time = (float)(circleTimer.ElapsedMilliseconds) / 1000f;
-					// x position
-					toolCommand [0] = radius * (Mathf.Cos (2f * Mathf.PI * frequency * time) - 1.0f) + startPos [0];
-					// y position
-					toolCommand [1] = radius * Mathf.Sin (2f * Mathf.PI * frequency * time) + startPos [1];
-					// z position
-					toolCommand [2] = startPos [2];
+					jointCommand [0] = startPos [0];
+					jointCommand [1] = radius * (Mathf.Cos (2f * Mathf.PI * frequency * time) - 1.0f) + startPos [1];
+					jointCommand [2] = radius * Mathf.Sin (2f * Mathf.PI * frequency * time) + startPos [2];
 				}
-				toolForce = toolPid.Update (toolCommand, toolPos, dt);
+				jointTorque = jointPid.Update (jointCommand, jointPos, dt);
 			} else {
-				toolForce.Clear ();
+				jointTorque.Clear ();
 			}
 
-			robot.SendCartesianForces (toolForce.ToVector3 ())
+			robot.SendCartesianForcesAndJointTorques (Vector3.zero, jointTorque.ToVector3 ())
 					.Catch (e => Barrett.Logger.Debug(Barrett.Logger.CRITICAL, "Exception {0}", e))
 					.Done ();
 
@@ -143,7 +145,7 @@ public class CustomJointTrajectory
 	/// </summary>
 	private void OnReceiveServerUpdate (Barrett.CoAP.MsgTypes.ServerUpdate update)
 	{
-		toolPos.FromVector3 (update.position);
+		jointPos.FromVector3 (update.position);
 	}
 
 	/// <summary>
@@ -214,16 +216,16 @@ public class CustomJointTrajectory
 			Idle ();
 		} else {
 			motionActive = true;
-			Console.WriteLine ("Moving to tool position (" + startPos [0].ToString ("f3") + ", " +
+			Console.WriteLine ("Moving to joint position (" + startPos [0].ToString ("f3") + ", " +
 				startPos [1].ToString ("f3") + ", " + startPos [2].ToString ("f3") + ")");
-			toolForce.Clear ();
-			toolPid.ResetAll ();
+			jointTorque.Clear ();
+			jointPid.ResetAll ();
 
 			// Since startPos was not declared as a Vector<float>, one is created here for
 			// the input to BeginMove().
 			float speed = 0.2f;
 			float acceleration = 0.2f;
-			startTraj.BeginMove (toolPos, Vector<float>.Build.DenseOfArray (startPos), speed, acceleration);
+			startTraj.BeginMove (jointPos, Vector<float>.Build.DenseOfArray (startPos), speed, acceleration);
 		}
 	}
 
@@ -233,8 +235,8 @@ public class CustomJointTrajectory
 	public void Idle ()
 	{
 		startTraj.EndMove ();
-		toolForce.Clear ();
-		toolPid.ResetAll ();
+		jointTorque.Clear ();
+		jointPid.ResetAll ();
 		motionActive = false;
 		circleTimer.Reset ();
 	}
