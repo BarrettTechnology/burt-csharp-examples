@@ -84,10 +84,14 @@ public class CustomToolTrajectory
 		// space.
 		int line = top;
 		int left = 10;
-		int length = 20;
-		PrintAtPosition (left, line++, "Commanded position:", length);
-		PrintAtPosition (left, line++, "Actual position:", length);
-		PrintAtPosition (left, line++, "Control force:", length);
+		int length = 35;
+		PrintAtPosition (left, line++, "Commanded Cartesian position (m):", length);
+		PrintAtPosition (left, line++, "Actual Cartesian position (m):", length);
+		PrintAtPosition (left, line++, "Cartesian control force (N):", length);
+
+		// Move the cursor to a nice place to display other text.
+		line += 2;
+		Console.SetCursorPosition (0, line);
 
 		// Set the start position on each line for the data.
 		left += length;
@@ -108,6 +112,7 @@ public class CustomToolTrajectory
 		bool running = true;
 		intervalTimer.Reset ();
 		displayTimer.Reset ();
+		displayTimer.Start ();
 		while (running) {
 			running = ReadKeyPress ();
 
@@ -122,6 +127,10 @@ public class CustomToolTrajectory
 				} else {
 					// Start the timer for the circle, if it's not already started.
 					if (!circleTimer.IsRunning) {
+						line += 1;
+						ClearLine (line, (uint)(Console.WindowHeight - line));
+						Console.SetCursorPosition (0, line);
+						Console.WriteLine ("Executing circular movement.");
 						circleTimer.Start ();
 					}
 
@@ -150,14 +159,16 @@ public class CustomToolTrajectory
 
 			// Update the display, if applicable.
 			if ((int)displayTimer.ElapsedMilliseconds >= displayUpdateTime) {
-					line = top;
-					PrintAtPosition (left, line++, toolPos.ToVector3 ().ToString ("F4"), length);
-					PrintAtPosition (left, line++, toolCommand.ToVector3 ().ToString ("F4"), length);
-					PrintAtPosition (left, line++, toolForce.ToVector3 ().ToString ("F4"), length);
+				line = top;
+				PrintAtPosition (left, line++, toolCommand.ToVector3 ().ToString ("F4"), length);
+				PrintAtPosition (left, line++, toolPos.ToVector3 ().ToString ("F4"), length);
+				PrintAtPosition (left, line++, toolForce.ToVector3 ().ToString ("F4"), length);
 
-					// Move the cursor to a nice place to display user input.
-					line += 2;
-					Console.SetCursorPosition (0, line);
+				// Move the cursor to a nice place to display user input.
+				line += 2;
+				Console.SetCursorPosition (0, line);
+
+				displayTimer.Restart ();
 			}
 		}
 
@@ -320,8 +331,20 @@ public class CustomToolTrajectory
 	public bool ReadKeyPress ()
 	{
 		if (Console.KeyAvailable) {
+			// Clear the previous command. Since the amount of text printed by the previous
+			// command is unknown, clear the everything below the current cursor position.
+			// Note that the cursor is assumed to be already positioned within the designated
+			// area for user input.
+			int line = Console.CursorTop;
+			ClearLine (line, (uint)(Console.WindowHeight - line));
+			Console.SetCursorPosition (0, line);
+
+			// Handle the new command
 			string keyPressed = Console.ReadKey (false).KeyChar.ToString ();
 			keyboardManager.HandleKeyPress (keyPressed);
+			if (keyPressed.Equals ("q") || keyPressed.Equals ("Q")) {
+				return false;
+			}
 		}
 		return true;
 	}

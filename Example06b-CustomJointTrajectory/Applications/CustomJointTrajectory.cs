@@ -22,16 +22,18 @@ public class CustomJointTrajectory
 	private Vector<float> jointCommand;  // commanded position
 	private Vector<float> jointTorque;   // commanded torque
 
-	// Characteristics of the circle. Start position is chosen to work for both
-	// right- and left-handed workspaces.
-	readonly float[] startPos = new float[] { 0.6f, 0.0f, 0.225f };
-	const float radius = 0.12f;    // meters
-	const float frequency = 0.4f;  // Hz
+	// Characteristics of the circle.
+	readonly float[] startPosLeft = new float[] { 0.0f, 0.0f, -1.57f };
+	readonly float[] startPosRight = new float[] { 0.0f, 0.0f, 1.57f };
+	private Vector<float> startPos;
+
+	const float radius = 0.15f;    // radians
+	const float frequency = 0.3f;  // Hz
 
 	private Barrett.Control.PidVector jointPid;
-	public static readonly float[] kpJointDefault = { 45, 100,  9 };  // N-m/rad
-	public static readonly float[] kiJointDefault = {  0,   0,  0 };  // N-m/rad-s
-	public static readonly float[] kdJointDefault = { 12,  15,  2 };  // N-m-s/rad
+	public static readonly float[] kpJointDefault = { 45, 80,  7 };  // N-m/rad
+	public static readonly float[] kiJointDefault = {  0,  0,  0 };  // N-m/rad-s
+	public static readonly float[] kdJointDefault = { 12, 12,  2 };  // N-m-s/rad
 	private Vector<float> kpJoint;
 	private Vector<float> kiJoint;
 	private Vector<float> kdJoint;
@@ -89,10 +91,14 @@ public class CustomJointTrajectory
 		// space.
 		int line = top;
 		int left = 10;
-		int length = 20;
-		PrintAtPosition (left, line++, "Commanded position:", length);
-		PrintAtPosition (left, line++, "Actual position:", length);
-		PrintAtPosition (left, line++, "Control torques:", length);
+		int length = 35;
+		PrintAtPosition (left, line++, "Commanded joint positions (rad):", length);
+		PrintAtPosition (left, line++, "Actual joint positions (rad):", length);
+		PrintAtPosition (left, line++, "Joint control torques (N-m):", length);
+
+		// Move the cursor to a nice place to display other text.
+		line += 2;
+		Console.SetCursorPosition (0, line);
 
 		// Set the start position on each line for the data.
 		left += length;
@@ -113,6 +119,7 @@ public class CustomJointTrajectory
 		bool running = true;
 		intervalTimer.Reset ();
 		displayTimer.Reset ();
+		displayTimer.Start ();
 		while (running) {
 			running = ReadKeyPress ();
 
@@ -127,6 +134,10 @@ public class CustomJointTrajectory
 				} else {
 					// Start the timer for the circle, if it's not already started.
 					if (!circleTimer.IsRunning) {
+						line += 1;
+						ClearLine (line, (uint)(Console.WindowHeight - line));
+						Console.SetCursorPosition (0, line);
+						Console.WriteLine ("Executing circular movement.");
 						circleTimer.Start ();
 					}
 
@@ -153,13 +164,15 @@ public class CustomJointTrajectory
 			// Update the display, if applicable.
 			if ((int)displayTimer.ElapsedMilliseconds >= displayUpdateTime) {
 				line = top;
-				PrintAtPosition (left, line++, jointPos.ToVector3 ().ToString ("F4"), length);
 				PrintAtPosition (left, line++, jointCommand.ToVector3 ().ToString ("F4"), length);
+				PrintAtPosition (left, line++, jointPos.ToVector3 ().ToString ("F4"), length);
 				PrintAtPosition (left, line++, jointTorque.ToVector3 ().ToString ("F4"), length);
 
 				// Move the cursor to a nice place to display user input.
 				line += 2;
 				Console.SetCursorPosition (0, line);
+
+				displayTimer.Restart ();
 			}
 		}
 
@@ -220,7 +233,7 @@ public class CustomJointTrajectory
 	/// </summary>
 	private void OnReceiveServerUpdate (Barrett.CoAP.MsgTypes.ServerUpdate update)
 	{
-		jointPos.FromVector3 (update.position);
+		jointPos.FromVector3 (update.joint_position);
 	}
 
 	/// <summary>
@@ -231,6 +244,17 @@ public class CustomJointTrajectory
 		Barrett.Logger.Debug (Barrett.Logger.INFO, "Handedness: {0}", status.handedness);
 		Barrett.Logger.Debug (Barrett.Logger.INFO, "Outerlink: {0}", status.outerlink);
 		Barrett.Logger.Debug (Barrett.Logger.INFO, "IsPatientConnected?: {0}", status.patient);
+		switch (status.handedness) {
+		case Barrett.CoAP.MsgTypes.RobotHandednessEnum.Left:
+			startPos = Vector<float>.Build.DenseOfArray (startPosLeft);
+			break;
+		case Barrett.CoAP.MsgTypes.RobotHandednessEnum.Right:
+			startPos = Vector<float>.Build.DenseOfArray (startPosRight);
+			break;
+		default:
+			// leave unset so program circle will not run
+			break;
+		}
 	}
 
 	/// <summary>
@@ -296,11 +320,9 @@ public class CustomJointTrajectory
 			jointTorque.Clear ();
 			jointPid.ResetAll ();
 
-			// Since startPos was not declared as a Vector<float>, one is created here for
-			// the input to BeginMove().
 			float speed = 0.2f;
 			float acceleration = 0.2f;
-			startTraj.BeginMove (jointPos, Vector<float>.Build.DenseOfArray (startPos), speed, acceleration);
+			startTraj.BeginMove (jointPos, startPos, speed, acceleration);
 		}
 	}
 
