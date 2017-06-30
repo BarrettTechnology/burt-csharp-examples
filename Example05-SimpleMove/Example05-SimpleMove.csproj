@@ -7,7 +7,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{530BE6FE-4F43-4CF1-80AF-8B57F7F1B461}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>Example03SimpleMove</RootNamespace>
+    <RootNamespace>BurtSharp.Examples</RootNamespace>
     <AssemblyName>Example05-SimpleMove</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <ReleaseVersion>0.2</ReleaseVersion>

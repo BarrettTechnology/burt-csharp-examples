@@ -5,10 +5,10 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{A6E1BC8A-6F6E-4047-A5E9-70D55DA78255}</ProjectGuid>
+    <ProjectGuid>{5A1D5B91-173B-4BED-8170-BA8C0C875B16}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>Example04CustomToolTrajectory</RootNamespace>
-    <AssemblyName>Example06-CustomToolTrajectory</AssemblyName>
+    <RootNamespace>BurtSharp.Examples</RootNamespace>
+    <AssemblyName>Example06b-CustomJointTrajectory</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <ReleaseVersion>0.2</ReleaseVersion>
   </PropertyGroup>
@@ -36,7 +36,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Mono.Options\Options.cs" />
-    <Compile Include="Applications\CustomToolTrajectory.cs" />
+    <Compile Include="Applications\CustomJointTrajectory.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

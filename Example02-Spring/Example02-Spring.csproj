@@ -7,7 +7,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{69F29E88-12A0-48BE-8C3E-220D1B871142}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>Example06Spring</RootNamespace>
+    <RootNamespace>BurtSharp.Examples</RootNamespace>
     <AssemblyName>Example02-Spring</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <ReleaseVersion>0.2</ReleaseVersion>

@@ -11,7 +11,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example04-DisplayBasicInfo"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example05-SimpleMove", "Example05-SimpleMove\Example05-SimpleMove.csproj", "{530BE6FE-4F43-4CF1-80AF-8B57F7F1B461}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example06-CustomToolTrajectory", "Example06-CustomToolTrajectory\Example06-CustomToolTrajectory.csproj", "{A6E1BC8A-6F6E-4047-A5E9-70D55DA78255}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example06a-CustomToolTrajectory", "Example06a-CustomToolTrajectory\Example06a-CustomToolTrajectory.csproj", "{A6E1BC8A-6F6E-4047-A5E9-70D55DA78255}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example06b-CustomJointTrajectory", "Example06b-CustomJointTrajectory\Example06b-CustomJointTrajectory.csproj", "{5A1D5B91-173B-4BED-8170-BA8C0C875B16}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{530BE6FE-4F43-4CF1-80AF-8B57F7F1B461}.Debug|x86.Build.0 = Debug|x86
 		{530BE6FE-4F43-4CF1-80AF-8B57F7F1B461}.Release|x86.ActiveCfg = Release|x86
 		{530BE6FE-4F43-4CF1-80AF-8B57F7F1B461}.Release|x86.Build.0 = Release|x86
+		{5A1D5B91-173B-4BED-8170-BA8C0C875B16}.Debug|x86.ActiveCfg = Debug|x86
+		{5A1D5B91-173B-4BED-8170-BA8C0C875B16}.Debug|x86.Build.0 = Debug|x86
+		{5A1D5B91-173B-4BED-8170-BA8C0C875B16}.Release|x86.ActiveCfg = Release|x86
+		{5A1D5B91-173B-4BED-8170-BA8C0C875B16}.Release|x86.Build.0 = Release|x86
 		{69F29E88-12A0-48BE-8C3E-220D1B871142}.Debug|x86.ActiveCfg = Debug|x86
 		{69F29E88-12A0-48BE-8C3E-220D1B871142}.Debug|x86.Build.0 = Debug|x86
 		{69F29E88-12A0-48BE-8C3E-220D1B871142}.Release|x86.ActiveCfg = Release|x86
@@ -45,7 +51,7 @@ Global
 		{EFD9DDED-4CB3-41AB-8C99-0F705531B560}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = Example01-Console\Example01-Console.csproj
 		version = 0.2
-		StartupItem = ProficioClient.Examples.02-HoldPosition\ProficioClient.Examples.02-HoldPosition.csproj
 	EndGlobalSection
 EndGlobal

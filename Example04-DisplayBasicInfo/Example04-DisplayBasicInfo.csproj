@@ -7,7 +7,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{2541E528-2853-4393-A6FD-BBF575D70C97}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>Example05DisplayBasicInfo</RootNamespace>
+    <RootNamespace>BurtSharp.Examples</RootNamespace>
     <AssemblyName>Example04-DisplayBasicInfo</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <ReleaseVersion>0.2</ReleaseVersion>
