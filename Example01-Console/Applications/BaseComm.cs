@@ -8,8 +8,16 @@ using Barrett.CoAP.MsgTypes;
 using UnityEngine;
 
 /// <summary>
-/// Basic robot communication example. Allows the user to enable/disable the
-/// robot and print out state information.
+/// This is a basic robot communication example that introduces how to run the BURT from C#.
+/// It covers how to use key presses to enable and disable the robot, home the robot, and print state information.
+///
+/// In order to accomplish this, the code uses a KeyboardManager to call a function based on a keypress and
+/// a RobotClient to send and receive data from the robot such as current position.
+/// 
+/// When you run this program, you will first want to home the robot by pressing 'h'. You can then try enabling and
+/// disabling the robot with 'e' and 'd'. When the arm is enabled, you will hear the motors turn on and you can move
+/// the robot freely. The robot will compensate for it's own weight, and will stay in a position that you move it to.
+/// When you disable the robot, it will fall slowly unless it is in a stable position.
 /// </summary>
 public class BaseCommExample
 {	
@@ -27,17 +35,17 @@ public class BaseCommExample
 		Barrett.Logger.Debug (Barrett.Logger.INFO, version.ToString ());
 		robot.SendCartesianForces (Vector3.zero);
 	
-		// Set up keyboard callbacks
+		// Set up keyboard callbacks. PrintUsage needs to be updated when these are changed.
 		keyboardManager = new Barrett.KeyboardManager ();
 		keyboardManager.SetDebug (true); // print key pressed
-		keyboardManager.AddKeyPressCallback ("q", Close);
+		keyboardManager.AddKeyPressCallback ("q", Close);  // this will call the Close method when 'q' is pressed
 		keyboardManager.AddKeyPressCallback ("h", OnHome);
 		keyboardManager.AddKeyPressCallback ("e", OnEnable);
 		keyboardManager.AddKeyPressCallback ("d", OnDisable);
 		keyboardManager.AddKeyPressCallback ("t", SubscribeToUpdate);
 		PrintUsage ();
 
-		// Loop: send zero force at every timestep
+		// Loop: send zero force at every timestep.
 		bool running = true;
 		while (running) {
 			running = ReadKeyPress ();
@@ -70,18 +78,21 @@ public class BaseCommExample
 	}
 
 	/// <summary>
-	/// Unsubscribes from updates and sends a request to disable the robot.
+	/// Unsubscribes from updates, sends a request to disable the robot, and terminates the process.
 	/// </summary>
 	public void Close ()
 	{
 		robot.UnsubscribeFromServerUpdate ();
 		robot.UnsubscribeFromRobotStatus ();
 		OnDisable ();
+		Environment.Exit (0);
 	}
 
 	/// <summary>
 	/// Sends a request to home the robot and then sleeps while waiting for that
 	/// request to take effect.
+	/// 
+	/// Homing the robot allows it to calibrate itself while in a known position.
 	/// </summary>
 	public void OnHome ()
 	{

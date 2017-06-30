@@ -8,11 +8,9 @@ put content here
 
 ### Reviewers
 
-- [ ] @heather
 - [ ] @cw
 - [ ] @amyblank
 - [ ] @bz
-- [ ] @jchung
 - [ ] @ps
 
 ### Resources

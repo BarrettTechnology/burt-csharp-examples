@@ -1,4 +1,4 @@
-using Mono.Options;
+﻿using Mono.Options;
 
 namespace BurtSharp.Examples
 {
@@ -6,7 +6,7 @@ namespace BurtSharp.Examples
 	{
 		public static void Main (string[] args)
 		{
-			new BaseCommExample ();
-        }
-    }
+			new SimpleMoveExample ();
+		}
+	}
 }

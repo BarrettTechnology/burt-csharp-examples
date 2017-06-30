@@ -5,10 +5,10 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{C7568C04-9952-43B0-91D8-182D0ABD89C9}</ProjectGuid>
+    <ProjectGuid>{A6E1BC8A-6F6E-4047-A5E9-70D55DA78255}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>BurtSharp.Examples</RootNamespace>
-    <AssemblyName>Example01-Console</AssemblyName>
+    <AssemblyName>Example06a-CustomToolTrajectory</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <ReleaseVersion>0.2</ReleaseVersion>
   </PropertyGroup>
@@ -33,10 +33,10 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Applications\BaseComm.cs" />
-    <Compile Include="Mono.Options\Options.cs" />
     <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Mono.Options\Options.cs" />
+    <Compile Include="Applications\CustomToolTrajectory.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -71,5 +71,9 @@
     <Reference Include="UnityEngine">
       <HintPath>..\dll\UnityEngine.dll</HintPath>
     </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Mono.Options\" />
+    <Folder Include="Applications\" />
   </ItemGroup>
 </Project>

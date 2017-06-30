@@ -13,6 +13,11 @@ doc/tmp
 *.ignore
 *.orig
 
+# Ignore vim swap files
+.*.swp
+.*.swo
+.*.swn
+
 # user-specific env-vars
 scripts/env-vars.sh
 
